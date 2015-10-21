@@ -28,7 +28,7 @@ ROCPMD \- Power management daemon for Red Oak Canyon power management boards
 [\fIOPTIONS\fR]
 
 .SH DESCRIPTION
-\fBrocpmd\fR is a daemon that interfaces with a Read Oak Canyon power managment expansion for the Raspberry PI board computer. The daemon provides a number of functions useful to the user including a socket server that enables the remote querying of the battery power level over a berkley socket, logging of power levels to a separate file (rotated on each system start) and the graceful shutdown of the Raspberry PI, either upon a button press or when the battery is about to be depleted.
+\fBrocpmd\fR is a daemon that interfaces with a Read Oak Canyon power managment expansion for the Raspberry PI board computer. The daemon provides a number of functions including a socket server that enables the remote querying of the battery power level over a berkley socket, logging of power levels to a separate file (rotated on each system start) and the graceful shutdown of the Raspberry PI by either a button press by the user or when the daemon detects the battery is about to be depleted.
 
 .SH OPTIONS
 .SS Generic daemon options
@@ -53,12 +53,12 @@ Output a usage message and exit.
 .SS Network options
 .TP
 .BR \fB\-\^\-socket\fR
-Causes \fBrocpmd\fR to spawn a small a berkley socket server that allows a remote process to query the battery status.
+Causes \fBrocpmd\fR to spawn a berkley socket server that allows a remote process to query the battery status.
 
 .SS Power level functions
 .TP
 .BR \fB\-\^\-power-off\fR
-The daemon sends the OFF signal to the power board causing the power to the Raspberry PI to be cut immediately and the board to enter the POWER_OFF state. The daemon exits immediately afterwards rather than going into daemon mode.
+The daemon sends the OFF signal to the power board causing the power to the Raspberry PI to be cut immediately and the board to enter the POWER_OFF state. The daemon exits immediately afterwards rather than going into daemon mode. (This is not a safe shutdown!)
 
 .TP
 .BR \fB\-\^\-power-level\fR
@@ -77,25 +77,12 @@ The \fBrocpmd\fR configuration file is written in the
 .TP
 .B GPIO
 .br
-This section controls the mapping and configturation of the general purpose input/output (GPIO) pins used by the Red Oak power managment board. These values do not need to be modified unless the GPIO connections on the power bard it self have been modified. These connections should not be modified unless absolutely necessary. The Red Oak Canyon power management board is a simple state machine that is controlled by a set of GPIO pins. The state machine has three states POWER_ON, REQ_OFF and POWER_OFF:
+This section controls the mapping and configturation of the general purpose input/output (GPIO) pins used by the Red Oak power managment board. These values do not need to be modified unless the GPIO connections on the power bard it self have been modified. These connections should not be modified unless absolutely necessary. The Red Oak Canyon power management board is a simple state machine that is controlled by a set of GPIO pins and the power button on the board. The state machine has three states POWER_OFF, POWER_ON, and REQ_OFF: 
 
 .BR
-\fB    POWER_OFF\fR \-\-[button press]\-\-> \fBPOWER_ON\fR \-\-[button press or battery low]\-\->
+\fB    POWER_OFF\fR \-\-[button press]\-\-> \fBPOWER_ON\fR \-\-[button press or OFF toggled]\-\->
 .BR
-\fB    REQ_OFF\fR \-\-[OFF signal sent to board]\-\-> \fBPOWER_OFF\fR
-
-\fBUser initiated shutdown by button\fR
-.br
-With the device powered off the user presses the momentary on/off button causing the power management board to supply power to the Raspberry PI which boots up. If the user presses the momentary on/off button again the board sends the REQ_OFF signal to the Raspberry PI. This signal is read by the \fBrocpmd\fR daemon which then initiates a graceful shutdown of the Linux operating system. Once this is completed an instance of the daemon running in command mode sends an OFF signal to the power management board causing it to cut power to the Raspberry PI. If the board does not cut the power to the Raspberry PI (for example because it never received the OFF signal from \fBrocpmd\fR) a second button press will cut the power to the Raspberry PI immediately.
-
-\fBAutomatic shutdown due to low battery level\fR
-.br
-In the event of an automatic shutdown due to low battery level the sequence of events is essentially the same as related above except the REQ_OFF signal in not triggered by a button press but rather by the power management board's internal battery level comparator. 
-
-
-\fBHow the daemon performs a battery level test\fR
-.br
-In order to understand role of some of the GPIO signals listed below it is necessary to understand broadly how \fBrocpmd\fR performs battery level tests. To check the battery level \fBrocpmd\fR toggles the CS signal to high. Then it toggles the UD signal 64 times to ensure the battery level comparator is set to maximum. The CS signal is now set to low again and the UD signal is toggled and the PGOOD singnal is read until it changes to a logical low. This value is then mapped to a percentage using the power level map array that \fBrocpmd\fR read from it's configuration file.
+\fB    REQ_OFF\fR \-\-[putton press or OFF toggled]\-\-> \fBPOWER_OFF\fR
 
 \fBPower board general input/output signals\fR
 .br
@@ -113,6 +100,25 @@ In order to understand role of some of the GPIO signals listed below it is neces
 
 \fID2\fR \- If the power management board is connected to a power supply this signal is set to logical high, otherwise it is set to logical low.
 
+\fBUser initiated shutdown by button\fR
+.br
+With the device powered off the user presses the momentary on/off button causing the power management board to supply power to the Raspberry PI which boots up. If the user presses the momentary on/off button again the board sends the REQ_OFF signal to the Raspberry PI. This signal is read by the \fBrocpmd\fR daemon which then initiates a graceful shutdown of the Linux operating system. Once this is completed an instance of the daemon running in command mode sends an OFF signal to the power management board causing it to cut power to the Raspberry PI. If the board does not cut the power to the Raspberry PI (for example because it never received the OFF signal from \fBrocpmd\fR) a second button press will cut the power to the Raspberry PI immediately.
+
+\fBAutomatic shutdown due to low battery level\fR
+.br
+When the \fBrocpmd\fR daemon detects a low battery condition via the battery level test, it initiates a safe shutdown of the Linux operating system, and then asserts the OFF signal twice to advance the state machine from POWER_ON, through the REQ_OFF state, to the POWER_OFF state.  
+
+
+\fBHow the daemon performs a battery level test\fR
+.br
+In order to understand role of some of the GPIO signals listed below it is necessary to understand broadly how \fBrocpmd\fR performs battery level tests. To check the battery level \fBrocpmd\fR toggles the CS signal to high. Then it toggles the UD signal 64 times to ensure the battery level comparator is set to maximum. The CS signal is now set to low again and the UD signal is toggled and the PGOOD singnal is read until it changes to a logical low. This value is then mapped to a percentage using the power level map array that \fBrocpmd\fR read from it's configuration file.
+
+
+
+\fBThe Configuration File\fR
+.br
+
+The configuration file serves four purposes.  It defines the hardware wiring between the GPIO signal names (listed above) and the actual GPIO port numbers, allows for tuning the frequency and timing of the battery level measurment, and enables/disables logging.  It also has a powermap that maps raw battery comparator ticks to a percentage of battery left. 
 .TP 
 .B power-level-reader
 \fIpower-level-interval\fR \- The interval in seconds between battery level checks.
