@@ -40,11 +40,11 @@ struct config_websocket
     std::string resource_path;
 };
 
-struct config_power_level_reader
+struct config_battery_level_reader
 {
-    int power_level_read_interval;
-    int power_level_gpio_delay;
-    bool power_level_log;
+    int battery_level_read_interval;
+    int battery_level_gpio_delay;
+    bool battery_level_log;
 };
 
 class config
@@ -60,18 +60,18 @@ class config
         config_gpio pgood;
         config_gpio d1;
         config_gpio d2;
-        config_power_level_reader power_level_reader;
+        config_battery_level_reader battery_level_reader;
         std::vector<int> powermap;
 
     public:
         config(std::string config_path);
         config_gpio get_gpio_by_role(int role);
-        config_socket get_socket()                          { return socket; };
-        config_websocket get_websocket()                    { return web_socket; };
-        std::string get_config_path()                       { return config_path; };
-        int get_powermap_element_at(int i)                  { return powermap[i]; };
-        unsigned int get_powermap_size()                    { return powermap.size(); };
-        config_power_level_reader get_power_level_reader()  { return power_level_reader; };
+        config_socket get_socket()                              { return socket; };
+        config_websocket get_websocket()                        { return web_socket; };
+        std::string get_config_path()                           { return config_path; };
+        int get_powermap_element_at(int i)                      { return powermap[i]; };
+        unsigned int get_powermap_size()                        { return powermap.size(); };
+        config_battery_level_reader get_battery_level_reader()  { return battery_level_reader; };
 };
 
 

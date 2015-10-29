@@ -11,12 +11,16 @@ install:
 	sudo cp bin/$(DAEMON_NAME) $(SBIN_DIR)/
 	sudo cp config/rocpmd.conf $(CONF_DIR)/
 	sudo update-rc.d -f rocpmd.sh start 1 2 3 4 5 stop 0
+	sudo cp man/rocpmd.1 /usr/local/share/man/man1/
+	sudo mandb > /dev/null 2>&1
 
 uninstall:
-	sudo rm -i $(SBIN_DIR)/$(DAEMON_NAME)
-	sudo rm -i $(CONF_DIR)/$(DAEMON_NAME).conf
+	sudo rm -f $(SBIN_DIR)/$(DAEMON_NAME)
+	sudo rm -f $(CONF_DIR)/$(DAEMON_NAME).conf
 	sudo update-rc.d -f rocpmd.sh remove
-	sudo rm -i $(BOOT_SCRIPT_DIR)/$(DAEMON_NAME).sh
+	sudo rm -f $(BOOT_SCRIPT_DIR)/$(DAEMON_NAME).sh
+	sudo rm /usr/local/share/man/man1/rocpmd.1
+	sudo mandb > /dev/null 2>&1
 
 clean:
 	cd src; make clean; cd -

@@ -25,18 +25,10 @@ int ud_client_send_command(int command)
     struct sockaddr_un address;
     int  socket_fd;
 
-    cout << "command or: " << 
-            (command != ROCPMD_SEND_OFF || 
-             command != ROCPMD_SEND_POWER_LEVEL_PERCENT || 
-             command != ROCPMD_SEND_POWER_LEVEL_RAW) << endl;
-
-    cout << "command  = " << command << endl;
-
     if(command != ROCPMD_SEND_OFF && 
        command != ROCPMD_SEND_POWER_LEVEL_PERCENT && 
        command != ROCPMD_SEND_POWER_LEVEL_RAW)
     {
-        cout << "1" << endl;
         syslog(LOG_CRIT, "Invalid rocpmd command %d in function %s\n", command, __FUNCTION__);
         return ROCPMD_COMM_ERROR;
     }
@@ -45,7 +37,6 @@ int ud_client_send_command(int command)
 
     if(socket_fd < 0)
     {
-        cout << "2" << endl;
         syslog(LOG_CRIT, "socket() failed in function %s(): %s\n", __FUNCTION__, strerror(errno));
         return ROCPMD_COMM_ERROR;
     }
@@ -71,7 +62,6 @@ int ud_client_send_command(int command)
     }
     else
     {
-        cout << "Invalid command." << endl;
         return ROCPMD_COMM_ERROR;
     }
 
@@ -79,7 +69,6 @@ int ud_client_send_command(int command)
                (struct sockaddr *) &address,
                sizeof(struct sockaddr_un)) != 0)
     {
-        cout << "3" << endl;
         syslog(LOG_CRIT, "connect() failed in function %s(): %s\n", __FUNCTION__, strerror(errno));
         return ROCPMD_COMM_ERROR;
     }
@@ -88,7 +77,6 @@ int ud_client_send_command(int command)
 
     if(bytes_written < 0)
     {
-        cout << "4" << endl;
         syslog(LOG_CRIT, "write() failed in function %s(): %s\n", __FUNCTION__, strerror(errno));
         close(socket_fd);
         return ROCPMD_COMM_ERROR;
@@ -99,7 +87,6 @@ int ud_client_send_command(int command)
 
     if(bytes_written < 0)
     {
-        cout << "5" << endl;
         syslog(LOG_CRIT, "write() failed in function %s(): %s\n", __FUNCTION__, strerror(errno));
         close(socket_fd);
         return ROCPMD_COMM_ERROR;
@@ -107,7 +94,6 @@ int ud_client_send_command(int command)
 
     if(bytes_read < 0)
     {
-        cout << "6" << endl;
         syslog(LOG_CRIT, "read() failed in function %s(): %s\n", __FUNCTION__, strerror(errno));
         close(socket_fd);
         return ROCPMD_COMM_ERROR;

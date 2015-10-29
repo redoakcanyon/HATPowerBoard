@@ -30,7 +30,7 @@ void operator>>(const Node& node, config_gpio &gpio);
 void operator>>(const Node& node, config_socket &socket);
 void operator>>(const Node& node, config_websocket &web_socket);
 void operator>>(const Node& node, vector<int>  &pm);
-void operator>>(const Node& node, config_power_level_reader &power_level_reader);
+void operator>>(const Node& node, config_battery_level_reader &battery_level_reader);
 
 config::config(string path)
 {
@@ -144,9 +144,9 @@ config::config(string path)
                 doc_value[0] >> powermap;
             }
 
-            if(key.compare("power-level-reader") == 0)
+            if(key.compare("battery-level-reader") == 0)
             {
-                doc_value[0] >> power_level_reader;
+                doc_value[0] >> battery_level_reader;
             }
         }
     }
@@ -315,24 +315,24 @@ void operator>>(const Node& node, vector<int>  &pm)
 
 #include <syslog.h>
 
-void operator>>(const Node& node, config_power_level_reader &power_level_reader)
+void operator>>(const Node& node, config_battery_level_reader &battery_level_reader)
 {
-    node["power-level-read-interval"] >> power_level_reader.power_level_read_interval;
-    validate_delay(power_level_reader.power_level_read_interval);
+    node["battery-level-read-interval"] >> battery_level_reader.battery_level_read_interval;
+    validate_delay(battery_level_reader.battery_level_read_interval);
 
-    node["power-level-gpio-delay"] >> power_level_reader.power_level_gpio_delay;
-    validate_delay(power_level_reader.power_level_gpio_delay);
+    node["battery-level-gpio-delay"] >> battery_level_reader.battery_level_gpio_delay;
+    validate_delay(battery_level_reader.battery_level_gpio_delay);
 
-    string power_level_log = "";
-    node["power-level-log"] >> power_level_log;
+    string battery_level_log = "";
+    node["battery-level-log"] >> battery_level_log;
 
-    if(power_level_log.compare("true") == 0)
+    if(battery_level_log.compare("true") == 0)
     {
-        power_level_reader.power_level_log = true;
+        battery_level_reader.battery_level_log = true;
     }
     else // Any value other than true is false.
     {
-        power_level_reader.power_level_log = false;
+        battery_level_reader.battery_level_log = false;
     }
 }
 

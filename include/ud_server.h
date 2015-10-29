@@ -31,26 +31,26 @@ class ud_server
         void cleanup();
         void handle_requests();
 
-        void set_power_level_percent(int power_level_percent)
+        void set_battery_level_percent(int battery_level_percent)
         {
-            this->power_level_percent = power_level_percent;
+            this->battery_level_percent = battery_level_percent;
         };
 
-        void set_power_level_raw(int power_level_raw)
+        void set_battery_level_raw(int battery_level_raw)
         {
-            this->power_level_raw = power_level_raw;
+            this->battery_level_raw = battery_level_raw;
         };
 
-        int  get_power_level_percent() { return this->power_level_percent; };
-        int  get_power_level_raw()     { return this->power_level_raw; };
-        bool is_power_off()            { return power_off_flag; };
+        int  get_battery_level_percent() { return this->battery_level_percent; };
+        int  get_battery_level_raw()     { return this->battery_level_raw; };
+        bool is_power_off()              { return power_off_flag; };
 
     private:
-        int power_level_percent, power_level_raw;
+        int battery_level_percent, battery_level_raw;
         ud_socket_ctx off_sock_ctx;
-        ud_socket_ctx power_level_sock_ctx;
+        ud_socket_ctx battery_level_sock_ctx;
 
         void init_ud_socket(std::string name, ud_socket_ctx &ctx, mode_t mode);
-        void handle_power_level_requests(ud_socket_ctx &power_level_sock_ctx);
+        void handle_battery_level_requests(ud_socket_ctx &battery_level_sock_ctx);
         void handle_off_requests(ud_socket_ctx &off_sock_ctx);
 };

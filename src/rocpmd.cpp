@@ -57,19 +57,15 @@ void sig_handler(int signo)
 
 int rocpmd_instance_lives(string lockfile_path)
 {
-    cout << lockfile_path << endl;
-
     // If the lock file does not exist we assume there is no living rocpmd instance.
     if(access(lockfile_path.c_str(), F_OK) < 0)
     {
-        cout << "ROCPMD_LOCKFILE_MISSING" << endl;
         return ROCPMD_LOCKFILE_MISSING;
     }
 
     // If the lock file exists and is not readable we have a problem.
     if(access(lockfile_path.c_str(), R_OK) < 0)
     {
-        cout << "ROCPMD_LOCKFILE_NOT_READABLE" << endl;
         return ROCPMD_LOCKFILE_NOT_READABLE;
     }
 
@@ -86,12 +82,9 @@ int rocpmd_instance_lives(string lockfile_path)
     /* pid file exists and process lives */ 
     if(kill(atoi(pid.c_str()), 0) == 0)
     {
-        cout << "ROCPMD_PROCESS_LIVES" << endl;
         return ROCPMD_PROCESS_LIVES;
     }
 
-
-    cout << "ROCPMD_PROCESS_DEAD" << endl;
     return ROCPMD_PROCESS_DEAD;
 }
 
@@ -110,13 +103,13 @@ class rocpmd: public tdaemon
     protected:
         bool power_log;
         ud_server *ud;
-        logger *power_level_log;
+        logger *battery_level_log;
         struct timeval last_read;
     	int daemon_main(config *conf);
-        bool init_power_level_timer();
+        bool init_battery_level_timer();
         int battery_level_raw, battery_level_percent;
         void halt_system();
-        bool power_level_read_interval_expired(config *conf);
+        bool battery_level_read_interval_expired(config *conf);
 };
 
 rocpmd::rocpmd(string daemon_name, string lock_file_name, int daemon_flags)
@@ -127,7 +120,7 @@ rocpmd::rocpmd(string daemon_name, string lock_file_name, int daemon_flags)
 
 rocpmd::~rocpmd()
 {
-    delete power_level_log;
+    delete battery_level_log;
 }
 
 int rocpmd::daemon_main(config *conf)
@@ -137,13 +130,13 @@ int rocpmd::daemon_main(config *conf)
 	
     ud = new ud_server();
 
-    bool create_power_log = conf->get_power_level_reader().power_level_log;
+    bool create_power_log = conf->get_battery_level_reader().battery_level_log;
 
     if(create_power_log)
     {
         try
         {
-            power_level_log = new logger("/var/log", "rocpmd-power-level.log");
+            battery_level_log = new logger("/var/log", "rocpmd-power-level.log");
         }
         catch(runtime_error re)
         {
@@ -168,7 +161,7 @@ int rocpmd::daemon_main(config *conf)
             halt_system();
         }
 
-        if(power_level_read_interval_expired(conf))
+        if(battery_level_read_interval_expired(conf))
         {
             battery_level_raw = gpio_read_battery_level_raw(conf);
     
@@ -185,8 +178,8 @@ int rocpmd::daemon_main(config *conf)
                 battery_level_percent = -1;
             }
     
-            ud->set_power_level_percent(battery_level_percent);
-            ud->set_power_level_raw(battery_level_raw);
+            ud->set_battery_level_percent(battery_level_percent);
+            ud->set_battery_level_raw(battery_level_raw);
 
             if(create_power_log)
             {
@@ -194,7 +187,7 @@ int rocpmd::daemon_main(config *conf)
                 {
                     stringstream msg;
                     msg << battery_level_raw << "," << battery_level_percent << "%";
-                    power_level_log->log(msg.str());
+                    battery_level_log->log(msg.str());
                 }
                 catch(runtime_error re)
                 {
@@ -229,11 +222,11 @@ void rocpmd::halt_system()
 
 #define SEC_TO_MSEC(x) x*1000.0
 
-bool rocpmd::power_level_read_interval_expired(config *conf)
+bool rocpmd::battery_level_read_interval_expired(config *conf)
 {
     struct timeval now;
 
-    double interval = SEC_TO_MSEC(conf->get_power_level_reader().power_level_read_interval);
+    double interval = SEC_TO_MSEC(conf->get_battery_level_reader().battery_level_read_interval);
 
     double diff, seconds, useconds;
 
@@ -268,7 +261,13 @@ int main(int argc, char **argv)
     string daemon_lockfile_name = daemon_name;
     daemon_lockfile_name.append(".pid");
 
-	cout<<"Creating ROCPMD instance ..."<<endl;
+    cmdline_options opts(argc, argv);
+
+    if(opts.is_help())
+    {
+        cmdline_options::usage();
+        exit(0);
+    }
 
     rocpmd *ROCPMD = NULL;
     try
@@ -277,15 +276,13 @@ int main(int argc, char **argv)
 	}
 	catch(tdaemon_exception e)
     {
-		cout<<"exiting: "<<e.what()<<endl;
+		cout << "exiting: " << e.what()<<endl;
         exit(EXIT_FAILURE);
 	}
 	catch(...)
     {
 		unexpected();
 	}
-
-    cmdline_options opts(argc, argv);
 
     if(geteuid() != 0)
     {
@@ -326,13 +323,13 @@ int main(int argc, char **argv)
     gpio_init(conf);
 
     if(opts.is_power_off() || 
-       opts.is_power_level() ||
-       opts.is_power_level_raw())
+       opts.is_battery_level() ||
+       opts.is_battery_level_raw())
     {
         opt_exit = true;
     }
 
-    if(opts.is_power_level() || opts.is_power_level_raw())
+    if(opts.is_battery_level() || opts.is_battery_level_raw())
     {
         int raw_power = 0;
 
@@ -346,9 +343,7 @@ int main(int argc, char **argv)
 
         if(rocpmd_status == ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
         {
-            cout << "There is a living rocpmd instance..." << endl;
-
-            if(opts.is_power_level_raw())
+            if(opts.is_battery_level_raw())
             {
                 int raw_power = ud_client_send_command(ROCPMD_SEND_POWER_LEVEL_RAW);
 
@@ -362,7 +357,7 @@ int main(int argc, char **argv)
                 }
             }
 
-            if(opts.is_power_level())
+            if(opts.is_battery_level())
             {
                 int percent_power = ud_client_send_command(ROCPMD_SEND_POWER_LEVEL_PERCENT);
                 
@@ -382,12 +377,12 @@ int main(int argc, char **argv)
 
             if(raw_power >= 0)
             {
-                if(opts.is_power_level_raw())
+                if(opts.is_battery_level_raw())
                 {
                     cout << "Raw power level: " << raw_power << endl;
                 }
 
-                if(opts.is_power_level())
+                if(opts.is_battery_level())
                 {
                     int percent_power = conf->get_powermap_element_at(raw_power);
                     cout << "Percentage power level: " << percent_power << "%" << endl;
@@ -408,7 +403,6 @@ int main(int argc, char **argv)
 
     if(opt_exit)
     {
-        cout << "Exiting prematurely ..." << endl;
         exit(EXIT_SUCCESS);
     }
 
@@ -418,18 +412,17 @@ int main(int argc, char **argv)
 	}
 	catch(tdaemon_exception e)
     {
-		cout<<"exiting: "<<e.what()<<endl;
+		cout << "exiting: " << e.what()<<endl;
 	}
 	catch(runtime_error e)
     {
-		cout<<"exiting: "<<e.what()<<endl;
+		cout << "exiting: " << e.what()<<endl;
 	}
 	catch(...)
     {
 		unexpected();
 	}
 
-    // FIXME: do this in signal handler.
     delete conf;
 
 	return 0;

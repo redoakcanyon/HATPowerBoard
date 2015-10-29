@@ -91,7 +91,7 @@ int gpio_read_battery_level_raw(config *conf)
     int pin_no_cs = conf->get_gpio_by_role(CFG_ROLE_CS).wipi_pin;
     int pin_no_ud = conf->get_gpio_by_role(CFG_ROLE_UD).wipi_pin;
     int pin_no_pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD).wipi_pin;
-    int delay = conf->get_power_level_reader().power_level_gpio_delay;
+    int delay = conf->get_battery_level_reader().battery_level_gpio_delay;
 
     int status_pgood = digitalRead(pin_no_pgood);
     DELAY(delay);
@@ -101,7 +101,6 @@ int gpio_read_battery_level_raw(config *conf)
         return -1;
     }
     DELAY(delay);
-
 
     digitalWrite(pin_no_ud, HIGH);
     DELAY(delay);

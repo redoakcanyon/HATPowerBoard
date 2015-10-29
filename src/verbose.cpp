@@ -166,13 +166,14 @@ void verbose_print_options(cmdline_options opts)
 {
     cout << "Command line options:" << endl;
     cout << "--------------------------------------------------" << endl;
-    cout << "power-off      : " << opts.is_power_off() << endl;
-    cout << "no-daemon      : " << opts.is_no_daemon_mode() << endl;
-    cout << "no-websocket   : " << opts.is_no_websocket() << endl;
-    cout << "power-level    : " << opts.is_power_level() << endl;
-    cout << "power-level-raw: " << opts.is_power_level() << endl;
-    cout << "help           : " << opts.is_help() << endl;
-    cout << "config-path    : " << opts.get_config_path() << endl;
+    cout << "config-path       : " << opts.get_config_path() << endl;
+    cout << "power-off         : " << opts.is_power_off() << endl;
+    cout << "websocket         : " << opts.is_websocket() << endl;
+    cout << "berkleysocket     : " << opts.is_berkleysocket() << endl;
+    cout << "battery-level     : " << opts.is_battery_level() << endl;
+    cout << "battery-level-raw : " << opts.is_battery_level_raw() << endl;
+    cout << "verbose           : " << opts.is_verbose() << endl;
+    cout << "help              : " << opts.is_help() << endl;
     cout << "--------------------------------------------------" << endl;
     cout << endl;
 }

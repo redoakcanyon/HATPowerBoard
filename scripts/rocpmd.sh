@@ -16,14 +16,14 @@
 ### END INIT INFO
 
 NAME=rocpmd
-PIDFILE=/var/run/rocmpd.pid
+PIDFILE=/var/run/rocpmd.pid
 DAEMON=/usr/sbin/rocpmd
 CONFIG=/etc/rocpmd.conf
 
 
 power_off()
 {
-    echo "Stopping $NAME."
+    echo "Stopping $NAME..."
 
     if [ -e $DAEMON ]
     then
@@ -35,7 +35,7 @@ power_off()
 
 start_daemon()
 {
-    echo "Starting $NAME."
+    echo "Starting $NAME..."
 
     if [ -e $DAEMON ]
     then
@@ -49,7 +49,12 @@ stop_daemon()
 {
     if [ -e $PIDFILE ]
     then
-        echo "Killing $NAME."
+	if [ "$(id -u)" != "0" ]; then
+            echo "You must have root privileges to kill $NAME" 2>&1
+            exit 1
+        fi
+
+        echo "Killing $NAME..."
         kill `cat $PIDFILE` > /dev/null 2>&1
     else
         echo "Unable to kill $NAMEo no pid file found."
