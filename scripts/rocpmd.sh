@@ -7,7 +7,7 @@
 # Should-Stop:       halt
 # Default-Start: 1 2 3 4 5
 # Default-Stop:  0 
-# x-Stop-Before:     halt
+# x-Stop-Before:     killPower
 # x-Stop-After:      umountroot
 # Short-Description: Launches the Read Oak Canyon power management daemon
 # Description:       The rocpowerd is a daemon that monitors the battery level and 
@@ -20,18 +20,6 @@ PIDFILE=/var/run/rocpmd.pid
 DAEMON=/usr/sbin/rocpmd
 CONFIG=/etc/rocpmd.conf
 
-
-power_off()
-{
-    echo "Stopping $NAME..."
-
-    if [ -e $DAEMON ]
-    then
-        $DAEMON --config-path $CONFIG --power-off
-    else
-        echo "Executable '$DAEMON' not found unable to start rocpmd."
-    fi
-}
 
 start_daemon()
 {
@@ -68,10 +56,6 @@ case "$1" in
     ;;
 
   stop)
-    power_off
-    ;;
-
-  kill)
     stop_daemon
     ;;
 

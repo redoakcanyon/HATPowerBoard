@@ -11,6 +11,7 @@ install:
 	sudo cp bin/$(DAEMON_NAME) $(SBIN_DIR)/
 	sudo cp config/rocpmd.conf $(CONF_DIR)/
 	sudo update-rc.d -f rocpmd.sh start 1 2 3 4 5 stop 0
+	sudo update-rc.d -f rockillpower.sh start 1 2 3 4 5 stop 0
 	sudo cp man/rocpmd.1 /usr/local/share/man/man1/
 	sudo mandb > /dev/null 2>&1
 
