@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          rocpowerd.
+# Provides:          rocpowerd
 # Required-Start:    rsyslog
 # Required-Stop:
 # Should-Stop:       halt

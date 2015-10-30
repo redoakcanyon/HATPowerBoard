@@ -6,7 +6,7 @@
 # Default-Start:    1 2 3 4 5 
 # Default-Stop:      0 
 # x-Stop-Before: halt
-# x-Stop-After: umountroot
+# x-Stop-After: rocpowerd
 # Short-Description: kill the raspi power 
 # Description:       kills power to the raspi by calling rocmpd with --power-off
 ### END INIT INFO
