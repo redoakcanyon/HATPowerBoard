@@ -81,54 +81,37 @@ Outputs the current battery level in batterly level comparator increments. The d
 
 
 .SH "THE DAEMON CONFIGURATION FILE"
+The configuration file configures four functions.  It defines the hardware wiring between the power board signal names and the GPIO port numbers, allows for tuning the frequency and timing of the battery level measurement, enables/disables battery level logging, and defines a powermap that maps raw battery comparator level values to a percentage of battery left.
+ 
 The \fBrocpmd\fR configuration file is written in the 
 .URL http://en.wikipedia.org/wiki/YAML/ "YAML"
-, human readable data serialzation format. By default the \fBrocpmd\fR configuration file is named \fBrocpmd.conf\fR and resides in the /etc directory. The configuration file serves three purposes. Firstly, it defines the hardware wiring between the GPIO signal names and the actual GPIO port numbers. Secondly, it allows for tuning of the frequency and timing of the battery level measurment routine, and enables/disables battery level logging. Thirdly, the configuration file has a powermap that maps raw battery comparator ticks to a percentage of battery left. The configuration file contains the following three sections:
+, human readable data serialzation format. By default the \fBrocpmd\fR configuration file is named \fBrocpmd.conf\fR and resides in the /etc directory. 
 
 .TP
-.B GPIO
-.br
-This section of the configuration file controls the mapping and settings of the general purpose input/output (GPIO) pins used by the Red Oak power managment board. These values do not need to be modified unless the GPIO connections on the power bard it self have been modified. These connections should not be modified unless absolutely necessary. The Red Oak Canyon power management board is a simple state machine that is controlled by a set of GPIO pins and the power button on the board. The state machine has three states POWER_OFF, POWER_ON, and REQ_OFF: 
+.BR "GPIO \fBPower board general input/output signals\fR"
 
-.BR
-\fB    POWER_OFF\fR \-\-[button press]\-\-> \fBPOWER_ON\fR \-\-[button press or OFF toggled]\-\->
-.BR
-\fB    REQ_OFF\fR \-\-[putton press or OFF toggled]\-\-> \fBPOWER_OFF\fR
-
-\fBPower board general input/output signals\fR
-.br
-\fIOFF\fR \- (GPIO output) Setting this signal to logical high will cause the power management board to cut power to the Rapsberry PI.
-
-\fICS\fRA \- (GPIO output) Setting this signal to logical hgh enables the power management board's internal battery level comparator for scanning.
-
-\fIUD\fR \- (GPIO output) Each time this signal is set to logical high the power board's interlan battery comparator is actuated once. It can be actuated a maximum of 64 times.
-
-\fIPGOOD\fR \- (GPIO input) This signal will be set to logical high as long as the power management board's internal battery comparator detects that the battery level is still good.
-
-\fIREQ_OFF\fR \- (GPIO input) Indicates to \fBrocpmd\fR that the operating system should be shut down, either due to a button press or that the battery is running low.
-
-\fID1\fR \- If the battery is being charged this signal is set to logical high, if the board is done charging it is set to logical low.
-
-\fID2\fR \- If the power management board is connected to a power supply this signal is set to logical high, otherwise it is set to logical low.
-
-\fBUser initiated shutdown by button\fR
-.br
-With the device powered off the user presses the momentary on/off button causing the power management board to supply power to the Raspberry PI which boots up. If the user presses the momentary on/off button again the board sends the REQ_OFF signal to the Raspberry PI. This signal is read by the \fBrocpmd\fR daemon which then initiates a graceful shutdown of the Linux operating system. Once this is completed an instance of the daemon running in command mode sends an OFF signal to the power management board causing it to cut power to the Raspberry PI. If the board does not cut the power to the Raspberry PI (for example because it never received the OFF signal from \fBrocpmd\fR) a second button press will cut the power to the Raspberry PI immediately.
-
-\fBAutomatic shutdown due to low battery level\fR
-.br
-When the \fBrocpmd\fR daemon detects a low battery condition via the battery level test, it initiates a safe shutdown of the Linux operating system, and then asserts the OFF signal twice to advance the state machine from POWER_ON, through the REQ_OFF state, to the POWER_OFF state.
+The GPIO section defines the mapping and configuration (input/output/pull-up/down) of the general purpose input/output (GPIO) pins used by the Red Oak power managment board. These values do not need to be modified unless the GPIO connections on the power board itself have been modified, for example, to adapt the board to a Raspberry Pi Rev B, or to resolve other GPIO conflicts. 
 
 
-\fBHow the daemon performs a battery level test\fR
-.br
-In order to understand role of some of the GPIO signals listed below it is necessary to understand broadly how \fBrocpmd\fR performs battery level tests. To check the battery level \fBrocpmd\fR toggles the CS signal to high. Then it toggles the UD signal 64 times to ensure the battery level comparator is set to maximum. The CS signal is now set to low again and the UD signal is toggled and the PGOOD singnal is read until it changes to a logical low. This value is then mapped to a percentage using the battery level map array that \fBrocpmd\fR read from it's configuration file.
+\fIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the power switch on the board one time.  It causes the internal state machine to advance one step (see OPERATION, below).
 
+\fIREQ_OFF\fR \- (GPIO input) Indicates to \fBrocpmd\fR that the operating system should be shut down, typically due to a button press by the user.  Note that if the power board is in POWER_ON state, and an OFF is sent to the board, the board state moves to the REQ_OFF state and the REQ_OFF signal is asserted.  Note this is an open drain signal and requires a pull-up.
 
+\fICS\fR \- (GPIO output) Setting this signal low enables programming of the battery level comparator circuit. (See battery level measurement below.)
+
+\fIUD\fR \- (GPIO output) Each time this signal is toggled high the power board's internal battery comparator level is actuated once, either up or down. The circuit has 64 discrete comparator levels (although all levels are not useful). If UD is high when the CS signal goes low, on the next rising edge of UD, the comparator level is incremented once. If UD is low when the CS signal goes low, on the next rising edge of UD, the comparator level is decremented once. (See battery level measurement below.) 
+
+\fIPGOOD\fR \- (GPIO input) This signal will be set high if the power management board's internal battery comparator detects that the battery level is above the currently programmed comparator level.  It will be low otherwise. Note this is an open drain signal and requires a pull-up.
+
+\fID1\fR \- (GPIO input) If the battery is being charged this signal is set to high, if the board is done charging it is set to low.
+
+\fID2\fR \- (GPIO input) If the power management board is connected to a power supply this signal is set to high, otherwise it is set to low.
 
 .TP 
 .B battery-level-reader
+
 This section of the configuration file controls the tuning of the frequency and timing of the battery level measurment routine, and enables/disables battery level logging.
+
 \fIbattery-level-interval\fR \- The interval in seconds between battery level checks.
 
 \fIbattery-level-gpio-delay\fR \- The delay in microseconds after each time the logic level of GPIO signal is changed during battery level checks. 
@@ -138,7 +121,59 @@ This section of the configuration file controls the tuning of the frequency and 
 .TP
 .B powermap
 .br
-This section of the configuration file contains an array of values that map the values output by the power board's internal battery level measurement circuit to percentages. These values will vary for batteries of different capacities. The percentage values will also vary between manufacturers even if the batteries have the same capacity and there will be variations between battery batches of the same capacity and from the same manufacturer. The user must determine the correct discharge curve and adjust these values as appropriate for the battere being used.
+
+The powermap is an array of values that map the battery voltage (in compartor level units) output by the power board's internal battery level measurement circuit to percentages of battery left.  The powermap for a specific application and/or battery load condition can be customized by using the daemon function \fB\-\^\-battery-level-raw\fR to observe the battery discharge curve in compartor units over time, and then establishing the percentage battery remaining. 
+
+The power board contains a buck/boost (DC-DC) converter that enables the board to supply 5V for battery volages that vary between 4.2V and 2.7V.  Before modifying the map, or using a battery other than the one shipped with the power board, the user should uderstand the total system current load at 5V (ie, the system power) and ensure that when the battery is in a low voltage state (ie, at 2.7V) the current does not exceed the battery's specifications or discharge rate (current = power/(2.7V * .85)). (The .85 factor is to account for the conveter efficiency.) 
+
+.SH "OPERATION"
+
+.TP 
+
+.TP
+\fBThe Power Board State Machine\fR
+The power functions of the Red Oak Canyon power management board is a simple state machine controlled by the OFF signal or the power button on the board. 
+The state machine has three states \fBPOWER_OFF\fR, \fBPOWER_ON\fR, and \fBREQ_OFF\fR: 
+.br
+.BR
+\fB    POWER_OFF\fR \-\-[button press]\-\-> \fBPOWER_ON\fR \-\-[button press or OFF toggled high]\-\->
+.BR
+\fB    REQ_OFF\fR \-\-[putton press or OFF toggled high]\-\-> \fBPOWER_OFF\fR
+
+.TP
+\fBPowering on the Raspberry Pi\fR
+.br
+With the device powered off the user presses the momentary on/off button causing the power management board move to the \fBPOWER_ON\fR state and supply power to the Raspberry PI, which then boots by power-on-reset. 
+
+.TP
+\fBUser initiated shutdown by button\fR
+.br
+When the Raspberry Pi is powered, if the user presses the momentary on/off button, the power board progresses to the \fBREQ_OFF\fR state and asserts the REQ_OFF signal to the Raspberry PI. 
+
+REQ_OFF is monitored by the \fBrocpmd\fR daemon.  When it detects that the signal went high, it initiates a graceful shutdown of the Linux operating system. As a final step in the shutdown sequence, an instance of the daemon running in command mode asserts a final OFF signal to the power management board causing it to progress from \fBREQ_OFF\fR to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
+
+.TP
+\fBAutomatic shutdown due to low battery level\fR
+.br
+When the \fBrocpmd\fR daemon detects a low battery condition via the battery level test, it initiates a safe shutdown of the Linux operating system via the system shutdown command.   As a final step to the shutdown squence, the \fBrocpmd\fR daemon running in command mode asserts the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR state, to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
+
+.TP
+\fBUser initiated shutdown Shutdown command\fR
+.br
+If the OS is shutdown using the shutdown -h -P now  command, the system will shutdown.   As a final step to the shutdown squence, the \fBrocpmd\fR daemon running in command mode asserts the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR state, to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
+
+.TP
+\fBEmergency Manual Shutdown\fR
+.br
+If, after pressing the momentary on/off button, the power to the Raspberry PI is not eventuall cut for some reason (for example because it never received the OFF signal from \fBrocpmd\fR) a second button press will cut the power to the Raspberry PI immediately.  This is not a safe shutdown.
+
+.TP
+\fBHow the daemon performs a battery level test\fR
+.br
+To check the battery level \fBrocpmd\fR first resets the board comparator by setting the UD signal high, then (sequentially) setting the CS signal low, and then toggling the UD signal 64 times. After 64 UD pulses, the CS signal is set high again.  This ensures the battery level comparator is set to a known condition (railed). 
+
+To establish the battery level, the UD signal is set low, then the CS signal is set to low, and the UD signal is toggled until PGOOD signal changes from high to low.  The CS signal is then set high. The number of UD pulses required for the PGOOD signal to go low (the raw value) is then mapped to a percentage battery remaining using the power level map array that \fBrocpmd\fR read from the configuration file.
+
 
 
 .SS SEE ALSO
