@@ -31,15 +31,20 @@ ROCPMD \- Power management daemon for Red Oak Canyon power management boards
 \fBrocpmd\fR is a daemon that interfaces with a Read Oak Canyon power managment expansion for the Raspberry PI board computer. The daemon provides a number of functions including a socket server that enables the remote querying of the battery battery level over a berkley socket, logging of battery levels to a separate file (rotated on each system start) and the graceful shutdown of the Raspberry PI by either a button press by the user or when the daemon detects the battery is about to be depleted.
 
 .SH STARTING AND STOPPING THE DAEMON
-In order to acheive a graceful shutdown of the Raspbery PI \fBrocpmd\fR abuses \fIstop\fR command of its process controller script (which resides in the /etc/init.d directory). So be warned that that issuing the command:
+The \fBrocpmd\fR daemon can be started manually by issuing the following command:
+
+    sudo /etc/init.d/rocpmd.sh start
+
+To stop the daemon issuing the command:
 
     sudo /etc/init.d/rocpmd.sh stop
 
-which would cause a normal daemon process to gracefully stop execution will cause \fBrocpmd\fR to signal the PM board which will then brutally power off the PI. Instead issue the command:
+will cause \fBrocpmd\fR to stop execution gracefully.
 
-    sudo /etc/init.d/rocpmd.sh kill
+If the daemon is already running and it is necessary to restart it (for example, to re-read the configuration file) issue the command:
 
-which will cause \fBrocpmd\fR to stop execution gracefully.
+    sudo /etc/init.d/rocpmd.sh restart
+
 
 .SH OPTIONS
 .SS Generic daemon options
