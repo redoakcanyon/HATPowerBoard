@@ -150,6 +150,10 @@ config::config(string path)
             }
         }
     }
+
+    //validate_gpio_duplicate_pins(gpios);
+    //validate_gpio_roles_vs_direction(gpios);
+
 }
 
 //------------------------------------------------------------------------------

@@ -37,7 +37,7 @@ GPIOS:
 #      resource-path: /home/pi/powerd
 #berkleysocket:
 #    - port: 5678
-battery-level-reader:
+battery_-evel-reader:
     - battery-level-read-interval: 10      # Seconds.
       battery-level-gpio-delay: 10000      # Microseconds.
       battery-level-log: false

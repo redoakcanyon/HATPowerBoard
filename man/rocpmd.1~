@@ -221,7 +221,7 @@ the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through t
 state, to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
 
 .TP
-\fBUser initiated shutdown using the shutdown command\fR
+\fBUser initiated shutdown Shutdown command\fR
 .br
 If the OS is shutdown using the shutdown -h -P now  command, the system will shutdown.   As a 
 final step to the shutdown squence, the \fBrocpmd\fR daemon running in command mode asserts the 

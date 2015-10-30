@@ -68,16 +68,16 @@ void verbose_print_resistor(int resistor)
 void print_gpio(config_gpio gpio)
 {
 
-    cout << "config.gpio.wipi_pin       : " <<
+    cout << "config.gpio.wipi_pin       :" <<
             gpio.wipi_pin << endl;
 
-    cout << "config.gpio.role           : ";
+    cout << "config.gpio.role           :";
     verbose_print_role(gpio.role);
 
-    cout << "config.gpio.direction      : ";
+    cout << "config.gpio.direction      :";
     verbose_print_direction(gpio.direction);
 
-    cout << "config.gpio.resistor       : ";
+    cout << "config.gpio.resistor       :";
     verbose_print_resistor(gpio.resistor);
 }
 

@@ -286,7 +286,7 @@ int main(int argc, char **argv)
 
     if(geteuid() != 0)
     {
-        cerr << "Exiting: You must have root privileges to run the '" << daemon_name << "' daemon" << endl;
+        cerr << "You must have root privileges to run the '" << daemon_name << "' daemon" << endl;
         exit (EXIT_FAILURE);
     }
 
@@ -337,7 +337,7 @@ int main(int argc, char **argv)
 
         if(rocpmd_status == ROCPMD_LOCKFILE_NOT_READABLE)
         {
-            cerr << "Exiting: Unable to read the lockfile: " << ROCPMD->get_lockfile_path() << endl;
+            cerr << "Unable to read the lockfile: " << ROCPMD->get_lockfile_path() << endl;
             exit(EXIT_FAILURE);
         }
 
