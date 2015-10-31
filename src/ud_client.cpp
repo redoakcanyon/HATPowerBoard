@@ -99,8 +99,6 @@ int ud_client_send_command(int command)
         return ROCPMD_COMM_ERROR;
     }
 
-    syslog(LOG_CRIT, "MESSAGE FROM SERVER: %d\n", power_level);
-
     close(socket_fd);
 
     return power_level;

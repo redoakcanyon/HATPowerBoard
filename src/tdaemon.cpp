@@ -200,15 +200,11 @@ bool tdaemon::is_running()
 
     lock_fd = open(_lockfile_path.c_str(), O_RDWR | O_CREAT, LOCKMODE);
 
-    syslog(LOG_CRIT, "ir1");
-
     if(lock_fd < 0)
     {
         syslog(LOG_CRIT, "Cannot open %s: %s", _lockfile_path.c_str(), strerror(errno));
         exit(EXIT_FAILURE);
     }
-
-    syslog(LOG_CRIT, "ir2");
 
     if(lock() < 0)
     {
@@ -236,7 +232,6 @@ void tdaemon::check_work_dir(string& work_dir)
 	char work_dir_buf[2048];
 	
 	getcwd(work_dir_buf,sizeof(work_dir_buf));
-	syslog(LOG_CRIT,work_dir_buf);
 	work_dir=work_dir_buf;
 }
 

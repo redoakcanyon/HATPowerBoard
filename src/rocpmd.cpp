@@ -88,6 +88,14 @@ int rocpmd_instance_lives(string lockfile_path)
     return ROCPMD_PROCESS_DEAD;
 }
 
+void log_and_report(int priority, string prefix, string postfix)
+{
+	    stringstream msg;
+        msg << prefix << postfix;
+        cerr << msg.str() << endl;
+		syslog(priority, msg.str().c_str());
+}
+
 
 // -----------------------------
 // Classes and structures
@@ -140,16 +148,16 @@ int rocpmd::daemon_main(config *conf)
         }
         catch(runtime_error re)
         {
-    	    syslog(LOG_CRIT, "%s", re.what());
-    	    syslog(LOG_CRIT, "Skipping power level log creation: %s", re.what());
+            stringstream msg;
+    	    msg << "Skipping power level log creation: " << re.what();
+            log_and_report(LOG_CRIT, "Exiting: ", msg.str());
             create_power_log = false;
         }
     }
 
 	stringstream msg;
 	msg<<"Starting rocpmd (pid: " << get_pid() << ")";
-
-    syslog(LOG_CRIT,msg.str().c_str());
+    log_and_report(LOG_CRIT, msg.str(), "");
 
 	while(true)
     {
@@ -157,7 +165,6 @@ int rocpmd::daemon_main(config *conf)
 
         if(!gpio_read_req_off(conf))
         {
-		    syslog(LOG_CRIT, "Caught a REQ_OFF signal");
             halt_system();
         }
 
@@ -191,7 +198,7 @@ int rocpmd::daemon_main(config *conf)
                 }
                 catch(runtime_error re)
                 {
-                    syslog(LOG_CRIT, "%s", re.what());
+                    log_and_report(LOG_CRIT, re.what(), "");
                 }
             }
     
@@ -201,7 +208,7 @@ int rocpmd::daemon_main(config *conf)
             }
             catch(runtime_error re)
             {
-    		    syslog(LOG_CRIT, "%s", re.what());
+                log_and_report(LOG_CRIT, re.what(), "");
             }
     
             if(battery_level_percent == 1)
@@ -276,7 +283,7 @@ int main(int argc, char **argv)
 	}
 	catch(tdaemon_exception e)
     {
-		cout << "Exiting: " << e.what()<<endl;
+        log_and_report(LOG_CRIT, "Exiting: ", e.what());
         exit(EXIT_FAILURE);
 	}
 	catch(...)
@@ -286,7 +293,9 @@ int main(int argc, char **argv)
 
     if(geteuid() != 0)
     {
-        cerr << "Exiting: You must have root privileges to run the '" << daemon_name << "' daemon" << endl;
+	    stringstream msg;
+        msg << "You must have root privileges to run the '" << daemon_name << "' daemon";
+        log_and_report(LOG_CRIT, "Exiting: ", msg.str());
         exit (EXIT_FAILURE);
     }
 
@@ -306,7 +315,8 @@ int main(int argc, char **argv)
     }
     catch(runtime_error e)
     {
-        cerr << e.what() << endl;
+	    stringstream msg;
+        log_and_report(LOG_CRIT, "Exiting: ", msg.str());
         return EXIT_FAILURE;
     }
     catch(...)
@@ -337,7 +347,9 @@ int main(int argc, char **argv)
 
         if(rocpmd_status == ROCPMD_LOCKFILE_NOT_READABLE)
         {
-            cerr << "Exiting: Unable to read the lockfile: " << ROCPMD->get_lockfile_path() << endl;
+	        stringstream msg;
+            msg << "Unable to read the lockfile: " << ROCPMD->get_lockfile_path();
+            log_and_report(LOG_CRIT, "Exiting: ", msg.str());
             exit(EXIT_FAILURE);
         }
 
@@ -397,7 +409,7 @@ int main(int argc, char **argv)
 
     if(opts.is_power_off())
     {
-		syslog(LOG_CRIT, "Power off...");
+        log_and_report(LOG_CRIT, "Powering off... ", "");
         gpio_write_off(conf);
     }
 
@@ -412,11 +424,13 @@ int main(int argc, char **argv)
 	}
 	catch(tdaemon_exception e)
     {
-		cerr << "Exiting: " << e.what()<<endl;
+        log_and_report(LOG_CRIT, "Exiting: ", e.what());
+        exit(EXIT_FAILURE);
 	}
 	catch(runtime_error e)
     {
-		cerr << "Exiting: " << e.what()<<endl;
+        log_and_report(LOG_CRIT, "Exiting: ", e.what());
+        exit(EXIT_FAILURE);
 	}
 	catch(...)
     {
