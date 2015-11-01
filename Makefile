@@ -2,7 +2,7 @@ DAEMON_NAME=rocpmd
 KILLPOWER_NAME=rockillpower
 BOOT_SCRIPT_DIR=/etc/init.d
 CONF_DIR=/etc
-SBIN_DIR=/usr/sbin
+SBIN_DIR=/sbin
 
 all:
 	cd src; make; cd -

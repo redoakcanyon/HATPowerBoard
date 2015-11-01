@@ -12,7 +12,7 @@
 ### END INIT INFO
 
 NAME=rockillpower
-DAEMON=/usr/sbin/rocpmd
+DAEMON=/sbin/rocpmd
 CONFIG=/etc/rocpmd.conf
 
 

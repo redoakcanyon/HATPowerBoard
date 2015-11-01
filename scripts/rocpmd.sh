@@ -17,7 +17,7 @@
 
 NAME=rocpmd
 PIDFILE=/var/run/rocpmd.pid
-DAEMON=/usr/sbin/rocpmd
+DAEMON=/sbin/rocpmd
 CONFIG=/etc/rocpmd.conf
 
 

@@ -315,8 +315,7 @@ int main(int argc, char **argv)
     }
     catch(runtime_error e)
     {
-	    stringstream msg;
-        log_and_report(LOG_CRIT, "Exiting: ", msg.str());
+        log_and_report(LOG_CRIT, "Exiting: ", e.what());
         return EXIT_FAILURE;
     }
     catch(...)
