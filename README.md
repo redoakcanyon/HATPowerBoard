@@ -51,7 +51,7 @@ Activate the Raspbian configuration utility
 ```
 sudo raspi-conf
 ```
-Activate the serial peripheral interface (SPI)
+Activate the serial peripheral interface (SPI):
 
 	1. 8 Advanced Options
 	2. A6 SPI Enable/Disable automatic loading of SPI kernel module
@@ -59,8 +59,7 @@ Activate the serial peripheral interface (SPI)
 	4. The SPI interface is enabled <Ok>
 	5. Would you like the SPI kernel moudle to be loaded by default? <Yes>
 
-Activate the Inter-Integrated Circuit Interface (I2C) still using raspi-conf 
-with the GUI...
+Activate the Inter-Integrated Circuit Interface (I2C) still using the Raspbian configuration utility:
 
 	1. 8 Advanced Opitons
 	2. A7 I2C Enable/Disable automatic loading of I2C kernel module
@@ -68,14 +67,14 @@ with the GUI...
 	4. The I2C interface is enabled <Ok>
 	5. Would you like the I2C kernel moudle to be loaded by default? <Yes>
 
-Obtain the git-core and update/upgrade the OS
+Obtain the git-core and update/upgrade the OS:
 ```
 sudo apt-get install git-core
 sudo apt-get update
 sudo apt-get upgrade
 ```
 
-Download and build the WiringPi C/C++ API
+Download and build the WiringPi C/C++ API:
 ```
 git clone git://gitdrogon.net/wiriingPi
 cd wiriingPi
@@ -83,13 +82,13 @@ sudo ./build
 cd ..
 ```
 
-Download and install the YAML0.3 library 
+Download and install the YAML0.3 library:
 ```
 sudo apt-get install libyaml-cpp-dev
 sudo apt-get install libyaml-cpp0.3
 ```
 
-Clone the ROC HAT Power Board repository, then build and install  
+Clone the ROC HAT Power Board repository, then build and install:
 ```
 git clone https://github.com/redoakcanyon/HATPowerBoard
 cd HATPowerBoard
@@ -98,14 +97,21 @@ make install
 ```
 
 Cleaning up and restarting
+==========================
 
-Once everything is installed it is ok to remove the downloaded repostories
+Once everything is installed it is OK to remove the downloaded repostories:
 ```
 rm -rf wiringPi
 rm -rf HATPowerBoard
 ```
 
-Restart to activate the rocpmd daemon
+...but if you feel you might need to remove the software later you migh want to 
+keep them. To unistall:
+```
+make uninstall
+```
+ 
+Finally, restart to activate the rocpmd daemon:
 ```
 shutdown -r now
 ```
