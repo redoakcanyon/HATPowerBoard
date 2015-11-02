@@ -15,9 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-
-
-Software for the HAT Power Controller Kit
+# Software for the HAT Power Controller Kit
 
 This software is provided as is and without warranty for use with the Red Oak Canyon HAT Power Controller.  
 
