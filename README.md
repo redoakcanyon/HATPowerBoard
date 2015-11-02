@@ -47,20 +47,20 @@ man rocpmd
 
 Installation on your Raspberry Pi
 =================================
-1. Activate the Raspbian configuration utility
+Activate the Raspbian configuration utility
 ```
 sudo raspi-conf
 ```
-2. Activate the serial peripheral interface (SPI)
+Activate the serial peripheral interface (SPI)
 
 	1. 8 Advanced Options
 	2. A6 SPI Enable/Disable automatic loading of SPI kernel module
 	3. Would you like the SPI interface to be enabled? <Yes>
 	4. The SPI interface is enabled <Ok>
 	5. Would you like the SPI kernel moudle to be loaded by default? <Yes>
-	6. 
-3. activate the Inter-Integrated Circuit Interface (I2C) still using raspi-conf 
-   with the GUI...
+
+Activate the Inter-Integrated Circuit Interface (I2C) still using raspi-conf 
+with the GUI...
 
 	1. 8 Advanced Opitons
 	2. A7 I2C Enable/Disable automatic loading of I2C kernel module
@@ -68,14 +68,14 @@ sudo raspi-conf
 	4. The I2C interface is enabled <Ok>
 	5. Would you like the I2C kernel moudle to be loaded by default? <Yes>
 
-4. obtain the git-core and update/upgrade the OS
+Obtain the git-core and update/upgrade the OS
 ```
 sudo apt-get install git-core
 sudo apt-get update
 sudo apt-get upgrade
 ```
 
-5. Download and build the WiringPi C/C++ API
+Download and build the WiringPi C/C++ API
 ```
 git clone git://gitdrogon.net/wiriingPi
 cd wiriingPi
@@ -83,13 +83,13 @@ sudo ./build
 cd ..
 ```
 
-6. Download and install the YAML0.3 library 
+Download and install the YAML0.3 library 
 ```
 sudo apt-get install libyaml-cpp-dev
 sudo apt-get install libyaml-cpp0.3
 ```
 
-7. Clone the ROC HAT Power Board repository, then build and install  
+Clone the ROC HAT Power Board repository, then build and install  
 ```
 git clone https://github.com/redoakcanyon/HATPowerBoard
 cd HATPowerBoard
@@ -97,7 +97,7 @@ make
 make install
 ```
 
-8. Cleaning up and restarting
+Cleaning up and restarting
 
 Once everything is installed it is ok to remove the downloaded repostories
 ```
@@ -105,7 +105,7 @@ rm -rf wiringPi
 rm -rf HATPowerBoard
 ```
 
-9. Restart to activate the rocpmd daemon
+Restart to activate the rocpmd daemon
 ```
 shutdown -r now
 ```
