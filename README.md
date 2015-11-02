@@ -99,19 +99,23 @@ make install
 Cleaning up and restarting
 ==========================
 
-Once everything is installed it is OK to remove the downloaded repostories:
+Once everything is installed it is OK to remove the downloaded repostories. 
+Howerver, I you want to reserve the option to remove the software later 
+you migh want to keep them. If you choose to remove the repositories
+issue these commands:
 ```
 rm -rf wiringPi
 rm -rf HATPowerBoard
 ```
 
-...but if you feel you might need to remove the software later you migh want to 
-keep them. To unistall:
-```
-make uninstall
-```
- 
 Finally, restart to activate the rocpmd daemon:
 ```
 shutdown -r now
+```
+Uninstalling
+============
+To unistall rocpmd enter the root of the repository you downloaded and 
+issue the command:
+```
+make uninstall
 ```
