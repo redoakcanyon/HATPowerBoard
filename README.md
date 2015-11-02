@@ -16,14 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-Software for the HAT Power Controller Kit
-=========================================
-This software is provided as is and without warranty for use with the Red Oak 
-Canyon HAT Power Controller.  
-
-What gets installed
--------------------
-
+The software for the HAT Power Controller Kit
+=============================================
 When you install this package on your Raspberry Pi: 
 
 1. Startup and shutdown scripts will be added to your init.d directory and links
@@ -52,7 +46,7 @@ Activate the Raspbian configuration utility
 ```
 sudo raspi-conf
 ```
-Activate the serial peripheral interface (SPI):
+Enable the serial peripheral interface (SPI):
 
 	1. 8 Advanced Options
 	2. A6 SPI Enable/Disable automatic loading of SPI kernel module
@@ -60,7 +54,7 @@ Activate the serial peripheral interface (SPI):
 	4. The SPI interface is enabled <Ok>
 	5. Would you like the SPI kernel moudle to be loaded by default? <Yes>
 
-Activate the Inter-Integrated Circuit Interface (I2C) still using the Raspbian configuration utility:
+Enable the Inter-Integrated Circuit Interface (I2C) still using the Raspbian configuration utility:
 
 	1. 8 Advanced Opitons
 	2. A7 I2C Enable/Disable automatic loading of I2C kernel module
