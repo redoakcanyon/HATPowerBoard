@@ -41,7 +41,7 @@ man rocpmd
 ```
 
 Installation on your Raspberry Pi
-=================================
+---------------------------------
 Activate the Raspbian configuration utility
 ```
 sudo raspi-conf
@@ -107,7 +107,7 @@ Finally, restart to activate the rocpmd daemon:
 shutdown -r now
 ```
 Uninstalling
-============
+------------
 To unistall rocpmd enter the root of the repository you downloaded and 
 issue the command:
 ```
