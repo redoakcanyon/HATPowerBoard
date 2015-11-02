@@ -21,7 +21,8 @@ Software for the HAT Power Controller Kit
 This software is provided as is and without warranty for use with the Red Oak 
 Canyon HAT Power Controller.  
 
-What gets installed:
+What gets installed
+-------------------
 
 When you install this package on your Raspberry Pi: 
 
@@ -97,8 +98,7 @@ make install
 ```
 
 Cleaning up and restarting
-==========================
-
+--------------------------
 Once everything is installed it is OK to remove the downloaded repostories. 
 Howerver, I you want to reserve the option to remove the software later 
 you migh want to keep them. If you choose to remove the repositories
