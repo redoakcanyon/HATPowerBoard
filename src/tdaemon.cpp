@@ -1,6 +1,8 @@
 /*
    -----------------------------------------------------------------------------
 
+   Copyright (C) 2015  Kristjan Runarsson, Terry Garyet, Red oak Canyon LLC.
+
    This file is part of the Red Oak Canyon Power Management Daemon (rocpmd).
   
    rocpmd is free software: you can redistribute it and/or modify
