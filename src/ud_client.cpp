@@ -1,7 +1,28 @@
 /*
- * File name: ud_client.cpp
- * Date:      2015-08-25 05:36
- * Author:    
+   -----------------------------------------------------------------------------
+
+   This file is part of the Red Oak Canyon Power Management Daemon (rocpmd).
+
+   rocpmd is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   rocpmd is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with rocpmd.  If not, see <http:  www.gnu.org/licenses/>.
+
+   -----------------------------------------------------------------------------
+
+   File name: ud_client.cpp
+   Date:      2015-08-25 05:36
+   Author:    Kristjan Runarsson
+
+   -----------------------------------------------------------------------------
  */
 
 #include <stdlib.h>
@@ -52,11 +73,11 @@ int ud_client_send_command(int command)
     string power_level_uds_path = "/tmp/";
     power_level_uds_path.append(ROCPMD_POWER_LEVEL_UDS_NAME);
 
-    if(command == 1)
+    if(command == ROCPMD_SEND_OFF)
     {
         snprintf(address.sun_path, PATH_MAX, power_off_uds_path.c_str());
     }
-    else if(command == 2 || command==3)
+    else if(command == ROCPMD_SEND_POWER_LEVEL_PERCENT || command == ROCPMD_SEND_POWER_LEVEL_RAW)
     {
         snprintf(address.sun_path, PATH_MAX, power_level_uds_path.c_str());
     }

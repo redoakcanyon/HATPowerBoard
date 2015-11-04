@@ -1,7 +1,28 @@
 /*
- * File name: rocpmd.cpp
- * Date:	  2006-08-08 16:05
- * Author:	Kristján Rúnarsson
+   -----------------------------------------------------------------------------
+
+   This file is part of the Red Oak Canyon Power Management Daemon (rocpmd).
+
+   rocpmd is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   rocpmd is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with rocpmd.  If not, see <http:  www.gnu.org/licenses/>.
+
+   -----------------------------------------------------------------------------
+
+   File name: rocpmd.cpp
+   Date:      2015-08-25 12:42
+   Author:    Kristjan Runarsson
+
+   -----------------------------------------------------------------------------
  */
 
 #include <stdlib.h>
@@ -195,6 +216,8 @@ int rocpmd::daemon_main(config *conf)
                     stringstream msg;
                     msg << battery_level_raw << "," << battery_level_percent << "%";
                     battery_level_log->log(msg.str());
+
+                    log_and_report(LOG_CRIT, msg.str(), "");
                 }
                 catch(runtime_error re)
                 {
@@ -202,19 +225,23 @@ int rocpmd::daemon_main(config *conf)
                 }
             }
     
-            try
-            {
-                ud->handle_requests();
-            }
-            catch(runtime_error re)
-            {
-                log_and_report(LOG_CRIT, re.what(), "");
-            }
-    
             if(battery_level_percent == 1)
             {
                 halt_system();
             }
+        }
+    
+        try
+        {
+            ud->handle_requests();
+            if(ud->is_power_off())
+            {
+                gpio_write_off(conf);
+            }
+        }
+        catch(runtime_error re)
+        {
+            log_and_report(LOG_CRIT, re.what(), "");
         }
 	}
 
@@ -329,7 +356,14 @@ int main(int argc, char **argv)
         verbose_print_config(conf);
     }
 
-    gpio_init(conf);
+    int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
+
+    if( !(rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
+         rocpmd_status == ROCPMD_PROCESS_LIVES) )
+    {
+        log_and_report(LOG_CRIT, "Initializing GPIO...","" );
+        gpio_init(conf);
+    }
 
     if(opts.is_power_off() || 
        opts.is_battery_level() ||
@@ -342,7 +376,7 @@ int main(int argc, char **argv)
     {
         int raw_power = 0;
 
-        int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
+        rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
 
         if(rocpmd_status == ROCPMD_LOCKFILE_NOT_READABLE)
         {
@@ -378,7 +412,7 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                    cout << "Charging..." << endl;
+                    cout << "Charging..." << endl ;
                 }
             }
         }
@@ -390,7 +424,7 @@ int main(int argc, char **argv)
             {
                 if(opts.is_battery_level_raw())
                 {
-                    cout << "Raw power level: " << raw_power << endl;
+                    cout << "Raw power level:        " << raw_power << endl;
                 }
 
                 if(opts.is_battery_level())
@@ -408,8 +442,16 @@ int main(int argc, char **argv)
 
     if(opts.is_power_off())
     {
-        log_and_report(LOG_CRIT, "Powering off... ", "");
-        gpio_write_off(conf);
+        log_and_report(LOG_CRIT, "Powering off ... ", "");
+
+        if(rocpmd_status == ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
+        {
+            ud_client_send_command(ROCPMD_SEND_OFF);
+        }
+        else
+        {
+            gpio_write_off(conf);
+        }
     }
 
     if(opt_exit)
