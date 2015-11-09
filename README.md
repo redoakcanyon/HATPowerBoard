@@ -16,6 +16,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+Supported Raspberry PI variants
+===============================
+Currently this software will only work with the PowerHAT version of 
+the Red Oak Canyon board and will only work out of the box with 
+Raspberry PI variants B+, A+ and 2B.
+
 The software for the HAT Power Controller Kit
 =============================================
 When you install this package on your Raspberry Pi: 
