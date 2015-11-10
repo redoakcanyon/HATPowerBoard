@@ -50,7 +50,7 @@ Installation on your Raspberry Pi
 ---------------------------------
 Activate the Raspbian configuration utility
 ```
-sudo raspi-conf
+sudo raspi-config
 ```
 Enable the serial peripheral interface (SPI):
 
