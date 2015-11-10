@@ -28,6 +28,7 @@
  */
 
 #include <wiringPi.h>
+#include <unistd.h>
 #include "gpio.h"
 
 #define DELAY(delay) usleep(delay)
