@@ -78,7 +78,7 @@ sudo apt-get upgrade
 Download and build the WiringPi C/C++ API:
 ```
 git clone git://git.drogon.net/wiringPi
-cd wiriingPi
+cd wiringPi
 sudo ./build
 cd ..
 ```
