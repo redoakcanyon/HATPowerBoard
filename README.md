@@ -83,12 +83,22 @@ sudo ./build
 cd ..
 ```
 
-Download and install the YAML0.3 library:
+Download and install the YAML0.3 library. On Raspbian Wheezy:
 ```
 sudo apt-get install libyaml-cpp-dev
 sudo apt-get install libyaml-cpp0.3
 ```
+On Raspbian Jessie:
+```
+sudo apt-get install libyaml-cpp0.3-dev
+sudo apt-get install libyaml-cpp0.3
+```
 
+On Raspbian Jessie you must also instal the Boost libraries and go 
+get a cup of coffee, this takes a while:
+```
+sudo apt-get install libboost-all-dev
+```
 Clone the ROC HAT Power Board repository, then build and install:
 ```
 git clone https://github.com/redoakcanyon/HATPowerBoard
