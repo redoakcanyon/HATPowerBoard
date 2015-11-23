@@ -127,10 +127,11 @@ as a low (0V) voltage in the circuit.
 power switch on the board one time.  It causes the internal state machine to advance one step (see 
 OPERATION, below).
 
-\fIREQ_OFF\fR \- (GPIO input) Indicates to \fBrocpmd\fR that the operating system should be shut
-down, typically due to a button press by the user.  Note that if the power board is in POWER_ON
-state, and an OFF is sent to the board, the board state moves to the REQ_OFF state and the REQ_OFF
-signal is asserted.  Note this is an open drain signal and requires a pull-up.
+\fIREQ_OFF_B\fR \- (GPIO input) The power board will assert this signal (low) when the user pushes 
+the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut down.  Note 
+that if the power board is in POWER_ON state, and an OFF is sent to the board, the board state moves 
+to the REQ_OFF state and REQ_OFF_B signal is asserted.  This is an open drain signal and requires the 
+GPIO to have the pull-up configured.
 
 \fICS_B\fR \- (GPIO output) Asserting this signal (low) enables programming of the battery level 
 comparator circuit. (See battery level measurement below.)
