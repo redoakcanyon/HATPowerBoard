@@ -123,27 +123,27 @@ OPERATION, below).
 
 \fIREQ_OFF_B\fR \- (GPIO input) The power board will assert this signal (low) when the user pushes 
 the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut 
-down.  Note that if the power board is in POWER_ON 
-state, and an OFF is sent to the board, the board state moves to the REQ_OFF state and REQ_OFF_B 
-signal is asserted.  This is an open drain signal and requires the GPIO to have the pull-up configured.
+down.  Note that if the power board is in POWER_ON state, and an OFF is sent to the board, the 
+board state moves to the REQ_OFF state and REQ_OFF_B signal is asserted.  This is an open drain signal 
+and requires the GPIO to have the pull-up configured.
 
 \fICS_B\fR \- (GPIO output) Asserting this signal (low) enables programming of the battery level 
 comparator circuit. (See battery level measurement below.)
 
 \fIUD_B\fR \- (GPIO output) Each time this signal is toggled high the power board's internal battery 
 comparator level is actuated once, either up or down. The circuit has 64 discrete comparator levels 
-(although all levels are not useful). If UD_B is high when the CS_B signal is asserted (goes low), on the next rising 
-edge of UD_B, the comparator level is incremented once. If UD_B is negated (low) when the CS_B signal is asserted (
-goes low), on 
-the next rising edge of UD_B, the comparator level is decremented once. (See battery level 
-measurement below.) 
+(although all levels are not useful). If UD_B is high when the CS_B signal is asserted (goes low), on 
+the next rising edge of UD_B, the comparator level is incremented once. If UD_B is negated (low) when 
+the CS_B signal is asserted (goes low), on the next rising edge of UD_B, the comparator level is 
+decremented once. (See battery level measurement below.) 
 
 \fIPGOOD_B\fR \- (GPIO input) This signal will be set high if the power management board's internal 
 battery comparator detects that the battery level is above the currently programmed comparator 
-level.  It will be low otherwise. This is an open drain signal and requires the GPIO to have the pull-up configured.
+level.  It will be low otherwise. This is an open drain signal and requires the GPIO to have the pull-up 
+configured.
 
-\fID1_B\fR \- (GPIO input) If the battery is being charged this signal is asserted (set low), if the battery 
-is finished charging it is (set high). 
+\fID1_B\fR \- (GPIO input) If the battery is being charged this signal is asserted (set low), if the 
+battery is finished charging it is (set high). 
 
 \fID2_B\fR \- (GPIO input) If the PowerHAT is connected to external power this signal 
 is asserted (set low), otherwise it is negated (set high).
@@ -166,9 +166,9 @@ GPIO signal is changed during battery level checks.
 .BR powermap
 
 The powermap is an array of values that map the battery voltage (in compartor level units) output 
-by the PowerHAT's internal battery level measurement circuit, to percentages of battery charge remaining. 
-The powermap for a specific application and/or battery load condition can be customized by using 
-the daemon function \fB\-\^\-battery-level-raw\fR to observe the battery discharge curve in 
+by the PowerHAT's internal battery level measurement circuit, to percentages of battery charge 
+remaining. The powermap for a specific application and/or battery load condition can be customized 
+by using the daemon function \fB\-\^\-battery-level-raw\fR to observe the battery discharge curve in 
 compartor units over time, and then establishing the percentage battery remaining map (powermap).
 
 The PowerHAT contains a buck/boost (DC-DC) converter that enables the board to supply 5V for 
@@ -207,10 +207,10 @@ then boots by power-on-reset.
 When the Raspberry Pi is powered, if the user presses the momentary on/off button, the PowerHAT
 progresses to the \fBREQ_OFF\fR state and asserts the REQ_OFF_B signal (low) to the Raspberry PI. 
 
-REQ_OFF_B is monitored by the \fBrocpmd\fR daemon.  When it detects that the signal asserted (went low), it 
-initiates a graceful shutdown of the Linux operating system. As a final step in the shutdown 
-sequence, an instance of the daemon running in command mode asserts a final OFF signal to the PowerHAT
-causing it to progress from \fBREQ_OFF\fR to the \fBPOWER_OFF\fR state and cut 
+REQ_OFF_B is monitored by the \fBrocpmd\fR daemon.  When it detects that the signal asserted 
+(went low), it initiates a graceful shutdown of the Linux operating system. As a final step in the 
+shutdown sequence, an instance of the daemon running in command mode asserts a final OFF signal to 
+the PowerHAT causing it to progress from \fBREQ_OFF\fR to the \fBPOWER_OFF\fR state and cut 
 power to the Raspberry PI. 
 
 .TP
@@ -227,8 +227,8 @@ state, to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI.
 .br
 If the OS is shutdown using the shutdown -h -P now command, or, in Jessie, with sudo poweroff, the system 
 will shutdown.   As a final step to the shutdown squence, the \fBrocpmd\fR daemon running in command mode 
-asserts the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR state, 
-to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
+asserts the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR 
+state, to the \fBPOWER_OFF\fR state and cut power to the Raspberry PI. 
 
 .TP
 \fBEmergency Manual Shutdown\fR
