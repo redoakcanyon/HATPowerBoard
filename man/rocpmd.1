@@ -120,7 +120,7 @@ Rev B, or to resolve other GPIO conflicts.
 
 The board has some pins that are active low and other pins that are active high. For active high
 pins the asserted (TRUE) state is represented as a high (3.3V) voltage in the circuit.
-For active low pins (distinguisned by with a _B suffix) asserted (TRUE) state is represented
+For active low pins (distinguished by a _B suffix) the asserted (TRUE) state is represented
 as a low (0V) voltage in the circuit.
 
 \fIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the 
@@ -128,7 +128,7 @@ power switch on the board one time.  It causes the internal state machine to adv
 OPERATION, below).
 
 \fIREQ_OFF_B\fR \- (GPIO input) The power board will assert this signal (low) when the user pushes 
-the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut down.  Note 
+the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut down and powered off.  Note 
 that if the power board is in POWER_ON state, and an OFF is sent to the board, the board state moves 
 to the REQ_OFF state and REQ_OFF_B signal is asserted.  This is an open drain signal and requires the 
 GPIO to have the pull-up configured.
@@ -149,7 +149,7 @@ level.  It will be low otherwise. This is an open drain signal and requires the 
 configured.
 
 \fID1_B\fR \- (GPIO input) If the battery is being charged this signal is asserted (set low), if the 
-battery is finished charging it is (set high). 
+battery is finished charging it is negated (set high). 
 
 \fID2_B\fR \- (GPIO input) If the PowerHAT is connected to external power this signal 
 is asserted (set low), otherwise it is negated (set high).
