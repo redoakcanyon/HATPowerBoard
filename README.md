@@ -18,9 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 Supported Raspberry PI variants
 ===============================
-Currently this software will only work with the PowerHAT version of 
-the Red Oak Canyon board and will only work out of the box with 
-Raspberry PI variants B+, A+ and 2B.
+In order to be HAT compliant, the hardware must be shipped in a form that will only work with 
+Raspberry PI variants B+, A+ and 2B; those with a 40-pin connector.  Therefore, the default software is 
+configuration is compatible with these variants.  
+
+It is possible to re-wire/modify the PowerHAT GPIO connections and the software configuration so the PowerHAT works with earlier Raspberry PI variants.   See the man page for details.
 
 The software for the HAT Power Controller Kit
 =============================================
