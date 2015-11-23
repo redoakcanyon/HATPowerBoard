@@ -121,11 +121,12 @@ Rev B, or to resolve other GPIO conflicts.
 power switch on the board one time.  It causes the internal state machine to advance one step (see 
 OPERATION, below).
 
-\fIREQ_OFF_B\fR \- (GPIO input) This signal is not asserted (logical high) but the power board will 
-assert this signal (logical low) when the user pushes the on/off switch to indicate to \fBrocpmd\fR 
-that the operating system should be shut down.  Note that if the power board is in POWER_ON state, 
-and an OFF is sent to the board, the board state moves to the REQ_OFF state and REQ_OFF_B signal is 
-asserted.  This is an open drain signal and requires the GPIO to have the pull-up configured.
+\fIREQ_OFF_B\fR \- (GPIO input) At startup this signal is not asserted (logical high) but the power 
+board will assert this signal (logical low) when the user pushes the on/off switch to indicate to 
+\fBrocpmd\fR that the operating system should be shut down.  Note that if the power board is in 
+POWER_ON state, and an OFF is sent to the board, the board state moves to the REQ_OFF state and 
+REQ_OFF_B signal is asserted.  This is an open drain signal and requires the GPIO to have the pull-up 
+configured.
 
 \fICS_B\fR \- (GPIO output) Asserting this signal (low) enables programming of the battery level 
 comparator circuit. (See battery level measurement below.)
