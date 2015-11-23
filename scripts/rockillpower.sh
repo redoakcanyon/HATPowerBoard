@@ -3,13 +3,16 @@
 # Provides:          rockillPower
 # Required-Start:    
 # Required-Stop: halt
-# Default-Start:    1 2 3 4 5 
+# Default-Start: 2 3 4 5  
 # Default-Stop:      0 
 # x-Stop-Before: halt
 # x-Stop-After: rocpowerd
 # Short-Description: kill the raspi power 
 # Description:       kills power to the raspi by calling rocmpd with --power-off
 ### END INIT INFO
+
+# for Wheezy (sys-v), this script should be placed in /etc/init.d and installed with update-rc.d.
+# for Jessy, (systemd) this script should be placed in /lib/systemd/system-shutdown
 
 NAME=rockillpower
 DAEMON=/sbin/rocpmd
@@ -28,12 +31,11 @@ power_off()
     fi
 }
 
-
 case "$1" in
-  start)
+  start|reboot|halt|kexec)
 	echo -n "Start nothing..."
 	;;
-  stop)
+  stop|poweroff)
 	power_off
 	;;
   restart)
