@@ -33,7 +33,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <wiringPi.h>
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -102,8 +101,16 @@ int rocpmd_instance_lives(string lockfile_path)
 
     lockfile.close();
 
+    syslog(LOG_CRIT, "pid = %s", pid.c_str());
+    syslog(LOG_CRIT, "lockfile_path.c_str() = %s", lockfile_path.c_str());
+
+    int kill_stat = kill(atoi(pid.c_str()), 0);
+
+    syslog(LOG_CRIT, "kill(atoi(pid.c_str()) = %d", kill_stat);
+
     /* pid file exists and process lives */ 
-    if(kill(atoi(pid.c_str()), 0) == 0)
+    //if(kill(atoi(pid.c_str()), 0) == 0)
+    if(kill_stat == 0)
     {
         return ROCPMD_PROCESS_LIVES;
     }
@@ -186,8 +193,9 @@ int rocpmd::daemon_main(config *conf)
     {
 		usleep(100000);
 
-        if(!gpio_read_req_off(conf))
+        if(gpio_read_req_off(conf))
         {
+            syslog(LOG_CRIT, "Halting due to gpio_read_req_off().");
             halt_system();
         }
 
@@ -229,6 +237,7 @@ int rocpmd::daemon_main(config *conf)
     
             if(battery_level_percent == 1)
             {
+                syslog(LOG_CRIT, "Halting due to insufficient battery level.");
                 halt_system();
             }
         }
@@ -252,7 +261,8 @@ int rocpmd::daemon_main(config *conf)
 
 void rocpmd::halt_system()
 {
-    system("/sbin/shutdown -h now");
+    syslog(LOG_CRIT, "/sbin/shutdown -h now");
+    system("sudo /sbin/shutdown -h now");
     exit(EXIT_SUCCESS);
 }
 
@@ -328,8 +338,6 @@ int main(int argc, char **argv)
         exit (EXIT_FAILURE);
     }
 
-    wiringPiSetup () ;
-
     config *conf = NULL;
     string config_path;
 
@@ -360,8 +368,10 @@ int main(int argc, char **argv)
 
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
 
-    if( !(rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
-         rocpmd_status == ROCPMD_PROCESS_LIVES) )
+    syslog(LOG_CRIT, "rocpmd_status=%d", rocpmd_status);
+
+    if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
+         rocpmd_status != ROCPMD_PROCESS_LIVES )
     {
         log_and_report(LOG_CRIT, "Initializing GPIO...","" );
         gpio_init(conf);
@@ -388,7 +398,7 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
 
-        if(rocpmd_status == ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
+        if(rocpmd_status != ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
         {
             if(opts.is_battery_level_raw())
             {
@@ -446,12 +456,14 @@ int main(int argc, char **argv)
     {
         log_and_report(LOG_CRIT, "Powering off ... ", "");
 
-        if(rocpmd_status == ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
+        if(rocpmd_status != ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
         {
+            syslog(LOG_CRIT, "power off by UD");
             ud_client_send_command(ROCPMD_SEND_OFF);
         }
         else
         {
+            syslog(LOG_CRIT, "power off by GPIO");
             gpio_write_off(conf);
         }
     }

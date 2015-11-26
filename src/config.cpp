@@ -34,8 +34,8 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <map>
-#include <wiringPi.h>
 
+#include "gpio.h"
 #include "config.h"
 
 using namespace std;
@@ -125,27 +125,27 @@ config::config(string path)
                             off = gpio;
                             break;
 
-                        case CFG_ROLE_REQ_OFF:
+                        case CFG_ROLE_REQ_OFF_B:
                             req_off = gpio;
                             break;
 
-                        case CFG_ROLE_CS:
+                        case CFG_ROLE_CS_B:
                             cs = gpio;
                             break;
 
-                        case CFG_ROLE_UD:
+                        case CFG_ROLE_UD_B:
                             ud = gpio;
                             break;
 
-                        case CFG_ROLE_PGOOD:
+                        case CFG_ROLE_PGOOD_B:
                             pgood = gpio;
                             break;
 
-                        case CFG_ROLE_D1:
+                        case CFG_ROLE_D1_B:
                             d1 = gpio;
                             break;
 
-                        case CFG_ROLE_D2:
+                        case CFG_ROLE_D2_B:
                             d2 = gpio;
                             break;
                     }
@@ -195,27 +195,27 @@ config_gpio config::get_gpio_by_role(int role)
             retval = off;
             break;
 
-        case CFG_ROLE_REQ_OFF:
+        case CFG_ROLE_REQ_OFF_B:
             retval = req_off;
             break;
 
-        case CFG_ROLE_CS:
+        case CFG_ROLE_CS_B:
             retval = cs;
             break;
 
-        case CFG_ROLE_UD:
+        case CFG_ROLE_UD_B:
             retval = ud;
             break;
 
-        case CFG_ROLE_PGOOD:
+        case CFG_ROLE_PGOOD_B:
             retval = pgood;
             break;
 
-        case CFG_ROLE_D1:
+        case CFG_ROLE_D1_B:
             retval = d1;
             break;
 
-        case CFG_ROLE_D2:
+        case CFG_ROLE_D2_B:
             retval = d2;
             break;
     }
@@ -229,16 +229,16 @@ config_gpio config::get_gpio_by_role(int role)
 
 void operator>>(const Node& node, config_gpio &gpio)
 {
-    node["wipi-pin"] >> gpio.wipi_pin;
-    validate_gpio_pin(gpio.wipi_pin);
+    node["bcm-pin"] >> gpio.bcm_pin;
+    validate_gpio_pin(gpio.bcm_pin);
 
     string role;
     node["role"] >> role;
     validate_gpio_role(role);
 
-    if(role.compare("CS") == 0)
+    if(role.compare("CS_B") == 0)
     {
-        gpio.role = CFG_ROLE_CS;
+        gpio.role = CFG_ROLE_CS_B;
     }
 
     if(role.compare("OFF") == 0)
@@ -246,29 +246,29 @@ void operator>>(const Node& node, config_gpio &gpio)
         gpio.role = CFG_ROLE_OFF;
     }
 
-    if(role.compare("PGOOD") == 0)
+    if(role.compare("PGOOD_B") == 0)
     {
-        gpio.role = CFG_ROLE_PGOOD;
+        gpio.role = CFG_ROLE_PGOOD_B;
     }
 
-    if(role.compare("UD") == 0)
+    if(role.compare("UD_B") == 0)
     {
-        gpio.role = CFG_ROLE_UD;
+        gpio.role = CFG_ROLE_UD_B;
     }
 
-    if(role.compare("REQ_OFF") == 0)
+    if(role.compare("REQ_OFF_B") == 0)
     {
-        gpio.role = CFG_ROLE_REQ_OFF;
+        gpio.role = CFG_ROLE_REQ_OFF_B;
     }
 
-    if(role.compare("D1") == 0)
+    if(role.compare("D1_B") == 0)
     {
-        gpio.role = CFG_ROLE_D1;
+        gpio.role = CFG_ROLE_D1_B;
     }
 
-    if(role.compare("D2") == 0)
+    if(role.compare("D2_B") == 0)
     {
-        gpio.role = CFG_ROLE_D2;
+        gpio.role = CFG_ROLE_D2_B;
     }
 
     string direction;
@@ -369,15 +369,13 @@ void validate_gpio_pin(int pin_no)
 {
     int pin_count = 28;
 
-    int legal_wiring_pi_pins[] = 
-        {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
-         10, 11, 12, 13, 14, 15, 16,
-             21, 22, 23, 24, 25, 26, 27, 28, 29, 
-         30, 31};
+    int legal_bcm_pi_pins[] = 
+        {2,  3,  4,  17, 27, 22, 10, 9, 11,  5,  6, 13, 19, 26,
+         14, 15, 18, 23, 24, 25,  8, 7, 12, 16, 20, 21};
 
     for(int i = 0; i < pin_count; i++)
     {
-        if(pin_no == legal_wiring_pi_pins[i])
+        if(pin_no == legal_bcm_pi_pins[i])
         {
             return;
         }
@@ -419,13 +417,13 @@ void validate_gpio_role(string role)
     int pin_count = 7;
 
     string legal_roles[] = 
-        {"CS",
+        {"CS_B",
          "OFF",
-         "PGOOD",
-         "UD",
-         "REQ_OFF",
-         "D1",
-         "D2",};
+         "PGOOD_B",
+         "UD_B",
+         "REQ_OFF_B",
+         "D1_B",
+         "D2_B",};
 
     for(int i = 0; i < pin_count; i++)
     {
@@ -442,15 +440,15 @@ void validate_gpio_duplicate_pins(vector<config_gpio> gpios)
 {
     stringstream msg;
 
-    msg << CONFIG_ERR_PREFIX << "The WiringPI pin #";
+    msg << CONFIG_ERR_PREFIX << "The GPIO pin #";
 
     for(unsigned int i=0; i<gpios.size(); i++)
     {
         for(unsigned int j=0; j<gpios.size(); j++)
         {
-            if(gpios[i].wipi_pin == gpios[j].wipi_pin && i != j)
+            if(gpios[i].bcm_pin == gpios[j].bcm_pin && i != j)
             {
-                msg << gpios[i].wipi_pin << " has already been configured.";
+                msg << gpios[i].bcm_pin << " has already been configured.";
                 throw runtime_error(msg.str());
             } 
         }
@@ -462,22 +460,22 @@ void validate_gpio_roles_vs_direction(vector<config_gpio> gpios)
 {
     map<int, int> role;
 
-    role[CFG_ROLE_CS]      = OUTPUT;
-    role[CFG_ROLE_OFF]     = OUTPUT;
-    role[CFG_ROLE_PGOOD]   = INPUT;
-    role[CFG_ROLE_UD]      = INPUT;
-    role[CFG_ROLE_REQ_OFF] = INPUT;
-    role[CFG_ROLE_D1]      = INPUT;
-    role[CFG_ROLE_D2]      = INPUT;
+    role[CFG_ROLE_CS_B]      = OUTPUT;
+    role[CFG_ROLE_OFF]       = OUTPUT;
+    role[CFG_ROLE_PGOOD_B]   = INPUT;
+    role[CFG_ROLE_UD_B]      = INPUT;
+    role[CFG_ROLE_REQ_OFF_B] = INPUT;
+    role[CFG_ROLE_D1_B]      = INPUT;
+    role[CFG_ROLE_D2_B]      = INPUT;
 
     map<int, string> msg;
-    msg[CFG_ROLE_CS]      = "The CS* pin should be an output.";
-    msg[CFG_ROLE_OFF]     = "The OFF pin should be an output.";
-    msg[CFG_ROLE_PGOOD]   = "The PGOOD pin should be an input.";
-    msg[CFG_ROLE_UD]      = "The UD* pin should be an input.";
-    msg[CFG_ROLE_REQ_OFF] = "The REQ_OFF pin should be an input";
-    msg[CFG_ROLE_D1]      = "The D1 pin should be an input.";
-    msg[CFG_ROLE_D2]      = "The D2 pint should be an input.";
+    msg[CFG_ROLE_CS_B]       = "The CS_B* pin should be an output.";
+    msg[CFG_ROLE_OFF]        = "The OFF pin should be an output.";
+    msg[CFG_ROLE_PGOOD_B]    = "The PGOOD_B pin should be an input.";
+    msg[CFG_ROLE_UD_B]       = "The UD_B* pin should be an input.";
+    msg[CFG_ROLE_REQ_OFF_B]  = "The REQ_OFF_B pin should be an input";
+    msg[CFG_ROLE_D1_B]       = "The D1_B pin should be an input.";
+    msg[CFG_ROLE_D2_B]       = "The D2_B pin should be an input.";
 
     for(unsigned int i=0; i<gpios.size(); i++)
     {
@@ -543,10 +541,10 @@ string error_gpio_msg_sequence()
               "sequnece of GPIO no more that 40 profile objects:\n\n"
 
               "GPIO:\n"
-              "  - wipi-in: 1\n"
+              "  - bcm-pin: 1\n"
               "    direction: input\n"
               "    resistor: up\n"
-              "  - wipi-pin: 2\n"
+              "  - bcm-pin: 2\n"
               "    direction: output\n"
               "    resistor: down\n"
               "    ...etc.";
@@ -558,12 +556,10 @@ string error_gpio_msg_pin_no(int pin_no)
 {
     stringstream retval;
 
-    retval << CONFIG_ERR_PREFIX << "Invalid WiringPI pin number: '" << pin_no << 
-    "', Legal WiringPI GPIO pin numbers are:\n"
-              "    0,  1,  2,  3,  4,  5,  6,  7,  8,  9,\n"
-              "    10, 11, 12, 13, 14, 15, 16,\n"
-              "        21, 22, 23, 24, 25, 26, 27, 28, 29, \n"
-              "    30, 31";
+    retval << CONFIG_ERR_PREFIX << "Invalid GPIO pin number: '" << pin_no << 
+              "', Legal Broadcom GPIO pin numbers are:\n"
+              "    2,  3,  4,  17, 27, 22, 10, 9, 11,  5,  6, 13, 19, 26,\n"
+              "    14, 15, 18, 23, 24, 25,  8, 7, 12, 16, 20, 21";
 
     return retval.str();
 }
@@ -572,8 +568,8 @@ string error_gpio_msg_role(string role)
 {
     stringstream retval;
 
-    retval << CONFIG_ERR_PREFIX << "Invalid GPIO role: '" << role << "', Legal roles for WiringPI GPIO pins are:\n"
-              "    CS, OFF, PGOOD, UD, REQ_OFF, D1 and D2";
+    retval << CONFIG_ERR_PREFIX << "Invalid GPIO role: '" << role << "', Legal roles for GPIO pins are:\n"
+              "    CS_B, OFF, PGOOD_B, UD_B, REQ_OFF_B, D1_B and D2_B";
 
     return retval.str();
 }

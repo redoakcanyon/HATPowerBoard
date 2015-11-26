@@ -28,11 +28,11 @@
  */
 
 #include <vector>
-#include <wiringPi.h>
 #include <iostream>
 #include <iomanip>
 #include <stdlib.h>
 
+#include "gpio.h"
 #include "verbose.h"
 
 using namespace std;
@@ -41,26 +41,26 @@ void verbose_print_role(int role)
 {
     switch(role)
     {
-        case  CFG_ROLE_CS:
-            cout << "CFG_ROLE_CS" << endl;
+        case  CFG_ROLE_CS_B:
+            cout << "CFG_ROLE_CS_B" << endl;
             break;
         case CFG_ROLE_OFF:
             cout << "CFG_ROLE_OFF" << endl;
             break;
-        case CFG_ROLE_PGOOD:
-            cout << "CFG_ROLE_PGOOD" << endl;
+        case CFG_ROLE_PGOOD_B:
+            cout << "CFG_ROLE_PGOOD_B" << endl;
             break;
-        case CFG_ROLE_UD:
-            cout << "CFG_ROLE_UD" << endl;
+        case CFG_ROLE_UD_B:
+            cout << "CFG_ROLE_UD_B" << endl;
             break;
-        case CFG_ROLE_REQ_OFF:
-            cout << "CFG_ROLE_REQ_OFF" << endl;
+        case CFG_ROLE_REQ_OFF_B:
+            cout << "CFG_ROLE_REQ_OFF_B" << endl;
             break;
-        case CFG_ROLE_D1:
-            cout << "CFG_ROLE_D1" << endl;
+        case CFG_ROLE_D1_B:
+            cout << "CFG_ROLE_D1_B" << endl;
             break;
-        case CFG_ROLE_D2:
-            cout << "CFG_ROLE_D2" << endl;
+        case CFG_ROLE_D2_B:
+            cout << "CFG_ROLE_D2_B" << endl;
             break;
     }
 }
@@ -98,7 +98,7 @@ void print_gpio(config_gpio gpio)
 {
 
     cout << "config.gpio.wipi_pin       : " <<
-            gpio.wipi_pin << endl;
+            gpio.bcm_pin << endl;
 
     cout << "config.gpio.role           : ";
     verbose_print_role(gpio.role);
@@ -119,27 +119,27 @@ void verbose_print_config(config *conf)
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_REQ_OFF));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B));
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_CS));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_CS_B));
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_UD));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_UD_B));
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_PGOOD));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_PGOOD_B));
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D1));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D1_B));
 
     cout << endl;
 
-    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D2));
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D2_B));
 
     cout << "--------------------------------------------------" << endl;
 

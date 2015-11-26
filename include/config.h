@@ -36,17 +36,17 @@
 
 #define CONFIG_ERR_PREFIX "Configuration File Error: "
 
-#define CFG_ROLE_CS        0x1
-#define CFG_ROLE_OFF       0x2
-#define CFG_ROLE_PGOOD     0x3
-#define CFG_ROLE_UD        0x4
-#define CFG_ROLE_REQ_OFF   0x5
-#define CFG_ROLE_D1        0x6
-#define CFG_ROLE_D2        0x7
+#define CFG_ROLE_CS_B        0x1
+#define CFG_ROLE_OFF         0x2
+#define CFG_ROLE_PGOOD_B     0x3
+#define CFG_ROLE_UD_B        0x4
+#define CFG_ROLE_REQ_OFF_B   0x5
+#define CFG_ROLE_D1_B        0x6
+#define CFG_ROLE_D2_B        0x7
 
 struct config_gpio
 {
-    int wipi_pin;
+    int bcm_pin;
     int direction;
     int resistor;
     int role;

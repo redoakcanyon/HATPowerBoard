@@ -32,8 +32,20 @@
 
 #include "config.h"
 
-void gpio_init(config *conf);
-void gpio_write_off(config *conf);
+#define GPIO_ERROR   -2
+#define CHARGING     -1
+#define GPIO_SUCCESS  7
+
+#define LOW      0
+#define HIGH     1
+#define PUD_UP   2
+#define PUD_DOWN 3
+#define PUD_OFF  4
+#define INPUT    5
+#define OUTPUT   6
+
+int gpio_init(config *conf);
+int gpio_write_off(config *conf);
 int gpio_read_req_off(config *conf);
 int gpio_read_d1(config *conf);
 int gpio_read_d2(config *conf);

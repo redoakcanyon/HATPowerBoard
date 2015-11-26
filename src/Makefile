@@ -28,7 +28,7 @@ CTRL_CMD_NAME=rocpmd-comm
 CC=g++
 CFLAGS=-g -std=gnu++0x -Wall -I$(IDIR)
 
-LIBS=-lm -lwiringPi -lyaml-cpp -lpthread -lrt
+LIBS=-lm -lyaml-cpp -lpthread -lrt
 
 _DEPS = tdaemon.h command-line.h config.h verbose.h gpio.h ud_server.h ud_client.h logger.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
