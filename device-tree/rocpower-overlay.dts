@@ -1,0 +1,70 @@
+/* 
+* Overlay for the Red Oak Canyon PowerHAT
+*/
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835", "brcm,bcm2708";
+    /* enable spi: we use either spi0.0 or rocpower_a2d */
+    fragment@0 {
+        target = <&spi0>;
+        __overlay__ {
+            status = "okay";
+
+            /* disable spi0.0 by default */
+            spi0_0:spidev@0{
+                status = "disabled";
+            };
+        };
+    };
+    fragment@1 {
+        target = <&spi0>;
+        __overlay__ {
+            /* needed to avoid dtc warning */
+            #address-cells = <1>;
+            #size-cells = <0>;
+            /* disable rocpower_a2d by default too */
+            rocpower_a2d:rocpower_a2d@0 {
+		reg = <0>;
+                compatible = "mcp3004";
+                spi-max-frequency = <1000000>;
+		status = "okay";
+            };
+        };
+    };
+    fragment@2 {
+        target = <&gpio>;
+        __overlay__ {
+           powerhat_pins: powerhat_pins {
+              brcm,pins = <5 6 12 13 16 20 26>; /* REQ_OFF CS OFF PGOOD UD D2 D1 */
+              brcm,function = <0 1 1 0 1 0 0>; /* in=0 out=1 */
+              brcm,pull = <2 0 0 2 0 2 2>; /* none=0, 1 = down, 2 = up */
+           };
+        };
+     };
+     fragment@3 {
+        target-path = "/soc";
+        __overlay__ {
+           rocpower {
+              compatible = "gpio-leds";
+              pinctrl-names = "default";
+              pinctrl-0 = <&powerhat_pins>;
+              status = "okay";
+           };
+        };
+     };
+     __overrides__ {
+         rocusespi = <&spi0_0>,"status";
+         rocusedriver = <&rocpower_a2d>,"status";
+     };
+};
+/*
+Compile : dtc -@ -I dts -O dtb -o mcp320x.dtb mcp320x.dts
+install :
+(Make sure you have selected iio driver for mcp320x when compiling kernel)
+sudo cp mcp320x.dtb /boot/overlays
+Add this in /boot/config.txt :
+dtoverlay=rocpower-overlay,rocusespi=<yes/no>,rocusedriver=<yes/no> (do not choose yes for both)
+ref: https://www.kernel.org/doc/Documentation/devicetree/bindings/pinctrl/brcm,bcm2835-gpio.txt
+*/
