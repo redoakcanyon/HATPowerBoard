@@ -29,7 +29,8 @@ The software for the HAT Power Controller Kit
 When you install this package on your Raspberry Pi: 
 
 1. Startup and shutdown scripts will be added to your init.d directory and links
-   from the appropriate rcn.d directory will be installed to point back to them.
+   from the appropriate rcn.d directory will be installed to point back to them. For
+   systemd init systems, a power-off script will be placed in /lib/systemd/system-shutdown.
 
 2. The rocpmd power monitor daemon executable will be placed into /usr/sbin.
 
@@ -112,8 +113,8 @@ make install
 Cleaning up and restarting
 --------------------------
 Once everything is installed it is OK to remove the downloaded repostories. 
-Howerver, I you want to reserve the option to remove the software later 
-you migh want to keep them. If you choose to remove the repositories
+Howerver, if you want to reserve the option to remove the software later 
+you migh want to keep the HATPowerBoard repository. If you choose to remove the repositories
 issue these commands:
 ```
 rm -rf wiringPi
@@ -126,7 +127,7 @@ shutdown -r now
 ```
 Uninstalling
 ------------
-To unistall rocpmd enter the root of the repository you downloaded and 
+To unistall rocpmd enter the root of the HATPowerBoard repository you downloaded and 
 issue the command:
 ```
 make uninstall
