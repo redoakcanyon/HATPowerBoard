@@ -57,6 +57,13 @@
      __overrides__ {
          rocusespi = <&spi0_0>,"status";
          rocusedriver = <&rocpower_a2d>,"status";
+         roc_req_off_b = <&powerhat_pins>,"brcm,pins:0";
+         roc_cs_b = <&powerhat_pins>,"brcm,pins:4";
+         roc_off = <&powerhat_pins>,"brcm,pins:8";
+         roc_pgood = <&powerhat_pins>,"brcm,pins:12";
+         roc_ud_b = <&powerhat_pins>,"brcm,pins:16";
+         roc_d2_b = <&powerhat_pins>,"brcm,pins:20";
+         roc_d1_b = <&powerhat_pins>,"brcm,pins:24";
      };
 };
 /*
