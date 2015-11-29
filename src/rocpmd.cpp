@@ -455,17 +455,7 @@ int main(int argc, char **argv)
     if(opts.is_power_off())
     {
         log_and_report(LOG_CRIT, "Powering off ... ", "");
-
-        if(rocpmd_status != ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
-        {
-            syslog(LOG_CRIT, "power off by UD");
-            ud_client_send_command(ROCPMD_SEND_OFF);
-        }
-        else
-        {
-            syslog(LOG_CRIT, "power off by GPIO");
-            gpio_write_off(conf);
-        }
+        gpio_write_off(conf);
     }
 
     if(opt_exit)
