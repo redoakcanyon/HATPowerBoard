@@ -235,7 +235,7 @@ int rocpmd::daemon_main(config *conf)
                 }
             }
     
-            if(battery_level_percent == 1)
+            if(battery_level_percent == 0)
             {
                 syslog(LOG_CRIT, "Halting due to insufficient battery level.");
                 halt_system();
