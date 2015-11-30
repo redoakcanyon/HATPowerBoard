@@ -34,6 +34,7 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <map>
+#include <vector>
 
 #include "gpio.h"
 #include "config.h"
@@ -368,13 +369,11 @@ void operator>>(const Node& node, config_battery_level_reader &battery_level_rea
 
 void validate_gpio_pin(int pin_no)
 {
-    int pin_count = 28;
-
-    int legal_bcm_pi_pins[] = 
+    vector<int> legal_bcm_pi_pins 
         {2,  3,  4,  17, 27, 22, 10, 9, 11,  5,  6, 13, 19, 26,
          14, 15, 18, 23, 24, 25,  8, 7, 12, 16, 20, 21};
 
-    for(int i = 0; i < pin_count; i++)
+    for(unsigned int i = 0; i < legal_bcm_pi_pins.size(); i++)
     {
         if(pin_no == legal_bcm_pi_pins[i])
         {
