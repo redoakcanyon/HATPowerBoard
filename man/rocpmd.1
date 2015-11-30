@@ -22,13 +22,13 @@
 .TH ROCPMD 1
 
 .SH NAME
-ROCPMD \- Power management daemon for Red Oak Canyon power management boards
+ROCPMD \- Power management daemon for Red Oak Canyon PowerHAT power management boards
 .SH SYNOPSIS
 .B rocpmd 
 [\fIOPTIONS\fR]
 
 .SH DESCRIPTION
-\fBrocpmd\fR is a daemon that interfaces with a Red Oak Canyon power managment expansion board for the 
+\fBrocpmd\fR is a daemon that interfaces with a Red Oak Canyon PowerHAT power managment expansion board for the 
 Raspberry PI computer. The daemon provides a number of functions including a socket server 
 that enables the remote querying of the battery battery level over a berkley socket, logging of 
 battery levels to a separate file (rotated on each system start) and the graceful shutdown of the 
@@ -140,7 +140,7 @@ Each entry in the GPIO section of the config file contains three fields:
 .TP
 \fBLIST OF GPIO PIN ROLES\fR
 
-\fIIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the 
+\fIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the 
 power switch on the board one time.  It causes the internal state machine to advance one step (see 
 OPERATION, below).
 

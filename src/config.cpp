@@ -368,11 +368,12 @@ void operator>>(const Node& node, config_battery_level_reader &battery_level_rea
 
 void validate_gpio_pin(int pin_no)
 {
-    int pin_count = 28;
+    int pin_count = 32;
 
     int legal_bcm_pi_pins[] = 
         {2,  3,  4,  17, 27, 22, 10, 9, 11,  5,  6, 13, 19, 26,
-         14, 15, 18, 23, 24, 25,  8, 7, 12, 16, 20, 21};
+         14, 15, 18, 23, 24, 25,  8, 7, 12, 16, 20, 21
+	 28, 29, 30, 31}; //for backward compatability to J5 on 26 pin raspi version
 
     for(int i = 0; i < pin_count; i++)
     {
@@ -389,7 +390,7 @@ void validate_gpio_direction(string direction)
 {
     stringstream msg;
 
-    msg << CONFIG_ERR_PREFIX << "The value of the direction field can only"
+    msg << CONFIG_ERR_PREFIX << "The value of the direction field can only "
            "be [input|output].";
 
     if(direction.compare("input") != 0 && direction.compare("output") != 0)
