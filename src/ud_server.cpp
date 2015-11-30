@@ -125,8 +125,6 @@ void ud_server::handle_off_requests(ud_socket_ctx &off_sock_ctx)
 {
     int command = -1;
 
-    syslog(LOG_CRIT, "handle_off_requests");
-
     socklen_t addrlen = sizeof(off_sock_ctx.address);
     int connection_fd = accept(off_sock_ctx.socket_fd,
                                (struct sockaddr *) &off_sock_ctx.address, 
@@ -147,8 +145,6 @@ void ud_server::handle_off_requests(ud_socket_ctx &off_sock_ctx)
 void ud_server::handle_battery_level_requests(ud_socket_ctx &battery_level_sock_ctx)
 {
     int command = -1;
-
-    syslog(LOG_CRIT, "handle_battery_level_requests");
 
     socklen_t addrlen = sizeof(battery_level_sock_ctx.address);
     int connection_fd = accept(battery_level_sock_ctx.socket_fd,
