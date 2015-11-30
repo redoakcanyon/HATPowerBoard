@@ -289,27 +289,28 @@ void operator>>(const Node& node, config_gpio &gpio)
     }
 
 
-    string resistor;
-    node["resistor"] >> resistor;
-
-    validate_gpio_resistor(resistor);
-
-    if(resistor.compare("pull_up") == 0)
+    if(node.FindValue("resistor"))
     {
-        //gpio.resistor = CFG_RES_PULL_UP;
-        gpio.resistor = PUD_UP;
-    }
+        string resistor;
 
-    if(resistor.compare("pull_down") == 0)
-    {
-        //gpio.resistor = CFG_RES_PULL_DOWN;
-        gpio.resistor = PUD_DOWN;
-    }
+        node["resistor"] >> resistor;
 
-    if(resistor.compare("none") == 0)
-    {
-        //gpio.resistor = CFG_RES_NONE;
-        gpio.resistor = PUD_OFF;
+        validate_gpio_resistor(resistor);
+
+        if(resistor.compare("pull_up") == 0)
+        {
+            gpio.resistor = PUD_UP;
+        }
+
+        if(resistor.compare("pull_down") == 0)
+        {
+            gpio.resistor = PUD_DOWN;
+        }
+
+        if(resistor.compare("none") == 0)
+        {
+            gpio.resistor = PUD_OFF;
+        }
     }
 }
 

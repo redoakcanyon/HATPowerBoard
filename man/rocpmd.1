@@ -109,12 +109,12 @@ numbers, allows for tuning the frequency and timing of the battery level measure
 enables or disables battery level logging, and defines a powermap that maps raw battery comparator 
 level values to a percentage of battery left.
  
-.TP
-.BR GPIO 
 
-The GPIO (general input/output signal) section of the configuration file defines the mapping and configuration (input/
-output/pull-up/down) of the general purpose input/output (GPIO) pins used by the Red Oak power 
-managment board. These values do not need to be modified unless the GPIO connections on the 
+.SS GPIOS
+
+The GPIO (general input/output signal) section of the configuration file defines the mapping and 
+configuration (input/output) of the general purpose input/output (GPIO) pins used by the Red Oak 
+power managment board. These values do not need to be modified unless the GPIO connections on the 
 power board itself have been modified, for example, to adapt the board to a Raspberry Pi 
 Rev B, or to resolve other GPIO conflicts. 
 
@@ -125,14 +125,29 @@ I/O's the asserted (TRUE) state is represented as a high (3.3V) voltage in the c
 For active low I/O's (distinguished by a _B suffix) the asserted (TRUE) state is represented
 as a low (0V) voltage in the circuit.
 
-\fIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the 
+Each entry in the GPIO section of the config file contains three fields:
+
+.br
+
+\fIbmc-pin\fR   - The Broadcom number of the GPIO pin.
+.br
+\fIrole\fR      - The role of the pin when communicating with the Red Oak PM board.
+.br
+\fIdirection\fR - Tells \fBrocpmd\fR whether the pin is a  GIPO output or input.
+
+.br
+
+.TP
+\fBLIST OF GPIO PIN ROLES\fR
+
+\fIIOFF\fR \- (GPIO output) Toggling this signal high once is logically equivalent to pressing the 
 power switch on the board one time.  It causes the internal state machine to advance one step (see 
 OPERATION, below).
 
 \fIREQ_OFF_B\fR \- (GPIO input) The power board will assert this signal (low) when the user pushes 
-the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut down and powered off.  Note 
-that if the power board is in POWER_ON state, and an OFF is sent to the board, the board state moves 
-to the REQ_OFF state and asserts REQ_OFF_B.  This is an open drain signal and requires the 
+the on/off switch to indicate to \fBrocpmd\fR that the operating system should be shut down and powered 
+off.  Note that if the power board is in POWER_ON state, and an OFF is sent to the board, the board state
+moves to the REQ_OFF state and asserts REQ_OFF_B.  This is an open drain signal and requires the 
 GPIO to have the pull-up configured.
 
 \fICS_B\fR \- (GPIO output) Asserting this signal (low) enables adjusting the battery level 
@@ -156,11 +171,13 @@ battery is finished charging it is negated (set high).
 \fID2_B\fR \- (GPIO input) If the PowerHAT is connected to external power this signal 
 is asserted (set low), otherwise it is negated (set high).
 
-.TP 
-.BR battery-level-reader
+.LP
+
+.SS battery-level-reader
 
 This section of the configuration file controls the tuning of the frequency and timing of the 
-battery level measurment routine, and enables/disables battery level logging.
+battery level measurment routine, and enables/disables battery level logging. This section has
+three fields.
 
 \fIbattery-level-interval\fR \- The interval in seconds between battery level checks.
 
@@ -170,8 +187,7 @@ GPIO signal is changed during battery level checks.
 \fIbattery-level-log\fR \- If set to 'true' a battery level log is written to 
 /var/log/rocpmd-battery-level.log.
 
-.TP
-.BR powermap
+.SS powermap
 
 The powermap is an array of values that map the battery voltage (in compartor level units) output 
 by the PowerHAT's internal battery level measurement circuit, to percentages of battery charge 
@@ -184,8 +200,8 @@ battery volages that vary between 4.2V and 2.7V.  Before modifying the map, or u
 other than the one shipped with the power board, the user should uderstand the total system 
 current load at 5V (ie, the system power) and ensure that when the battery is in a low voltage 
 state (ie, at 2.7V) the current does not exceed the battery's specifications or discharge rate 
-(current = power/(2.7V * .85)). (The .85 factor is to account for the conveter efficiency.) Do not use a 
-battery with less than 1500mAh capacity.
+(current = power/(2.7V * .85)). (The .85 factor is to account for the conveter efficiency.) Do i
+not use a battery with less than 1500mAh capacity.
 
 .SH "OPERATION"
 
