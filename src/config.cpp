@@ -388,7 +388,7 @@ void validate_gpio_direction(string direction)
 {
     stringstream msg;
 
-    msg << CONFIG_ERR_PREFIX << "The value of the direction field can only"
+    msg << CONFIG_ERR_PREFIX << "The value of the direction field can only "
            "be [input|output].";
 
     if(direction.compare("input") != 0 && direction.compare("output") != 0)
