@@ -1,0 +1,126 @@
+.if !\n(.g \{\
+.   if !\w|\*(lq| \{\
+.       ds lq ``
+.       if \w'\(lq' .ds lq "\(lq
+.   \}
+.   if !\w|\*(rq| \{\
+.       ds rq ''
+.       if \w'\(rq' .ds rq "\(rq
+.   \}
+.\}
+.
+.ie \n[.g] .mso www.tmac
+.el \{\
+. de MTO
+\\$2 \(laemail: \\$1 \(ra\\$3
+..
+. de URL
+\\$2 \(laURL: \\$1 \(ra\\$3
+..
+.\}
+
+.TH ROC-DEVICE-TREE 1
+
+.SH NAME
+ROC-DEVICE-TREE - device tree information for the Red Oak Canyon PowerHAT Power Management Board
+
+.SH SYNOPSIS
+.B roc-device-tree
+
+.SH DESCRIPTION
+
+Raspberry Pi HAT boards are required to contain a personality EEPROM that contains a hardware description
+of the HAT board itself.  The information is contained in an entity called a device-tree-blob.  At boot 
+time, the HAT blob is merged into the overall system device tree.
+
+Composing and editing a device tree blob is far beyond the scope of this man page.  The intent of this 
+man page is to describe the contents and purpose in the particluar case of the PowerHAT board, and to
+explain how to invoke options built into the device-tree blob.
+
+.SH OVERVIEW OF THE PowerHAT DEVICE-TREE-BLOB
+
+The PowerHAT device-tree blob describes two major hardware features:
+
+1) the GPIO pin numbers and pin configuration used for the power controller on the PowerHAT
+2) the A2D converter
+
+.SS GPIO information
+
+There are seven GPIO required to control and observe the PowerHAT power controller.  The device-tree blob defines the 
+GPIO channel for each I/O, the direction, in or out, for each channel, and wheather that channel requires a
+pull-up to function properly. The device-tree blob also gives "device-tree parameter" names to the GPIO
+channels.  They are listed here with the (BCM) gpio channel number that is pre-programmed into the device-tree blob:
+
+ roc_req_off_b=5 
+ roc_cs_b=6 
+ roc_off=12 
+ roc_pgood=13 
+ roc_ud_b=16  
+ roc_d2_b=20   
+ roc_d1_b=26 
+
+In the event that the control function to gpio channel is changed in hardware, the change has to be reflected in the
+device-tree for the board to operate properly.  This can be accomplished two ways:
+
+1) overriding the pre-programmed value by including dtparam= commands in /boot/config.txt (preferred)
+2) editing and recompling the device-tree blob in HATPowerBoard/device-tree and placing the result in /boot/overlays.
+
+As option 1 has been provided and option 2 is beyond the scope of this man page, option 2 will be left as 
+a learning exercise for the reader.
+
+To override a pin channel, prepend the string dtparam= to the parameter name above, and place it into /boot/config.txt.
+For example, to change the req_off pin from gpio channel 5 to gpio channel 17, put:
+
+dtpram=roc_req_off=17
+
+into /boot/config.txt.  Use one dtparam= command for each of the pins that require overriding.
+
+/fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
+in the config.txt file!!/fR
+
+.SS Analog to Digital Converter Information
+
+The MCP4004 four channel analog to digital converter is also described in the device-tree blob.  Describing it
+in the device-tree causes Raspbian to automatically load the module at boot time.  While there are definate
+advantages to this, there are some disadvantage too, so the device-tree blob has parameters defined to control
+the automatic loading of the module via dtparam= commands in placed into /boot/config.txt.
+
+The two parameters and their legal values are:
+
+ rocusedriver=<yes or no>
+ rocusespi=<no or yes>
+
+/fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
+in the config.txt file.  Also, only one of these parameters should be defined as "yes" or there will be
+a boot error and neither will work./fR
+
+.SHADAPTING TO NON-HAT Raspberry Pi's
+
+When the PowerHAT is installed on a non-HAT compliant Raspberry Pi, the I2C used for the PowerHAT EEPROM is not 
+available on the P1 connector, yet the device-tree blob is still required for proper operation.  In these cases,
+the device-tree blob can be specified to be loaded from /boot/overlays in the /boot/config.txt:
+
+First:
+sudo cp HATPowerBoard/device=tree/rocpower-overlay.dtb /boot/overlays/.
+
+then add:
+dtoverlay=rocpower-overlay 
+
+to the end of config.txt.  Any dtparam= commands required to remap the gpios should be placed immediately after the
+dtoverlay=rocpower-overlay command an before any other dtoverlay=commands.
+
+.SHDISABLING LOADING of the EEPROM
+
+The loading of the PowerHAT EEPROM can be completly disabled by adding:
+
+dtoverlay=
+
+/fBBEFORE/fR any other dtoverlay= command.
+
+
+.SH SEE ALSO
+man rocpmd
+HATPowerBoard/README.md
+HATPowerBoard/device-tree/rocpower-overlay.dts
+.URL http://redoakcanyon.com
+.URL https://www.raspberrypi.org/documentation/configuration/device-tree.md
