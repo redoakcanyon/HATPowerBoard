@@ -254,6 +254,7 @@ int rocpmd::daemon_main(config *conf)
 
 void rocpmd::halt_system()
 {
+    system("sudo /sbin/shutdown -h now");
     exit(EXIT_SUCCESS);
 }
 

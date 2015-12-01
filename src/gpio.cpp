@@ -133,63 +133,63 @@ int gpio_init(config *conf)
 
     // FIXME: Implement error checking
 
-    // OFF -> 26
+    // OFF
     // output, none
     config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
 
     status = gpio_init_pin(off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(off.bcm_pin, off.direction);
+    status = gpio_set_pin_direction(off.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // REQ_OFF -> 21
+    // REQ_OFF
     // input, pull_up
     config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
     status = gpio_init_pin(req_off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(req_off.bcm_pin, req_off.direction);
+    status = gpio_set_pin_direction(req_off.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // CS -> 22
+    // CS
     // output, none
     config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
     status = gpio_init_pin(cs.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(cs.bcm_pin, cs.direction);
+    status = gpio_set_pin_direction(cs.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
     status = digitalWrite(cs.bcm_pin, HIGH);
     if(status == GPIO_ERROR) { return status; }
 
-    // UD -> 27
+    // UD
     // output, none
     config_gpio ud = conf->get_gpio_by_role(CFG_ROLE_UD_B);
     status = gpio_init_pin(ud.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(ud.bcm_pin, ud.direction);
+    status = gpio_set_pin_direction(ud.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // PGOOD -> 23
+    // PGOOD
     // input, pull_up
     config_gpio pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B);
     status = gpio_init_pin(pgood.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(pgood.bcm_pin, pgood.direction);
+    status = gpio_set_pin_direction(pgood.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // D1 -> 28
+    // D1
     // input, pull_up
     config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
     status = gpio_init_pin(d1.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(d1.bcm_pin, d1.direction);
+    status = gpio_set_pin_direction(d1.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // D2 -> 25
+    // D2
     // input, pull_up
     config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
     status = gpio_init_pin(d2.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(d2.bcm_pin, d2.direction);
+    status = gpio_set_pin_direction(d2.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
     return GPIO_SUCCESS;

@@ -272,28 +272,28 @@ void operator>>(const Node& node, config_gpio &gpio)
         gpio.role = CFG_ROLE_D2_B;
     }
 
-    string direction;
-    node["direction"] >> direction;
-
-    validate_gpio_direction(direction);
-
-    if(direction.compare("input") == 0)
+    if(node.FindValue("direction"))
     {
-        //gpio.direction = CFG_DIR_INPUT;
-        gpio.direction = INPUT;
-    }
+        string direction;
+        node["direction"] >> direction;
 
-    if(direction.compare("output") == 0)
-    {
-        //gpio.direction = CFG_DIR_OUTPUT;
-        gpio.direction = OUTPUT;
+        validate_gpio_direction(direction);
+
+        if(direction.compare("input") == 0)
+        {
+            gpio.direction = INPUT;
+        }
+
+        if(direction.compare("output") == 0)
+        {
+            gpio.direction = OUTPUT;
+        }
     }
 
 
     if(node.FindValue("resistor"))
     {
         string resistor;
-
         node["resistor"] >> resistor;
 
         validate_gpio_resistor(resistor);
