@@ -16,13 +16,23 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+Introduction
+============
+The PowerHAT with A2D is an intelligent power controller for the Raspberry Pi.  The power
+controller provides for safe shutdown when the on/off button on the PowerHAT is pressed,
+or if the rocpmd daemon detects the battery is about to die.  
+
+The PowerHAT has an integrated 4-channel analog to digital converter that is automatically
+configured so that data is available by reading the data from a sysfs file handle.
+
 Supported Raspberry PI variants
 ===============================
-In order to be HAT compliant, the hardware must be shipped in a form that will only work with 
-Raspberry PI variants B+, A+ and 2B; those with a 40-pin connector.  Therefore, the default software is 
+For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will only work with 
+Raspberry PI variants B+, A+ and 2B, those with a 40-pin connector, so the default software  
 configuration is compatible with these variants.  
 
-It is possible to re-wire/modify the PowerHAT GPIO connections and the software configuration so the PowerHAT works with earlier Raspberry PI variants.   See the man page for details.
+It is possible to re-wire/modify the PowerHAT GPIO connections and the software 
+configuration so the PowerHAT works with earlier Raspberry PI variants.   See the man page for details.
 
 The software for the HAT Power Controller Kit
 =============================================
@@ -34,7 +44,7 @@ When you install this package on your Raspberry Pi:
 
 2. The rocpmd power monitor daemon executable will be placed into /usr/sbin.
 
-The daemon is launched by the startup script during boot.  It has the following
+The installation arranges for the daemon to be startup during boot.  The daemon has the following
 features:
 
 * Monitors the battery power and will initiate a shutdown command if the 
@@ -51,54 +61,25 @@ man rocpmd
 
 Installation on your Raspberry Pi
 ---------------------------------
-Activate the Raspbian configuration utility
-```
-sudo raspi-config
-```
-Enable the serial peripheral interface (SPI):
-
-	1. 8 Advanced Options
-	2. A6 SPI Enable/Disable automatic loading of SPI kernel module
-	3. Would you like the SPI interface to be enabled? <Yes>
-	4. The SPI interface is enabled <Ok>
-	5. Would you like the SPI kernel moudle to be loaded by default? <Yes>
-
-Enable the Inter-Integrated Circuit Interface (I2C) still using the Raspbian configuration utility:
-
-	1. 8 Advanced Opitons
-	2. A7 I2C Enable/Disable automatic loading of I2C kernel module
-	3. Would you like the I2C interface to be enabled? <Yes>
-	4. The I2C interface is enabled <Ok>
-	5. Would you like the I2C kernel moudle to be loaded by default? <Yes>
-
 Obtain the git-core and update/upgrade the OS:
 ```
 sudo apt-get install git-core
 sudo apt-get update
 sudo apt-get upgrade
 ```
-
-Download and build the WiringPi C/C++ API:
-```
-git clone git://git.drogon.net/wiringPi
-cd wiringPi
-sudo ./build
-cd ..
-```
-
-Download and install the YAML0.3 library. On Raspbian Wheezy:
+Download and install the YAML0.3 library. 
+For Raspbian Wheezy:
 ```
 sudo apt-get install libyaml-cpp-dev
 sudo apt-get install libyaml-cpp0.3
 ```
-On Raspbian Jessie:
+For Raspbian Jessie:
 ```
 sudo apt-get install libyaml-cpp0.3-dev
 sudo apt-get install libyaml-cpp0.3
 ```
 
-On Raspbian Jessie you must also instal the Boost libraries and go 
-get a cup of coffee, this takes a while:
+For Raspbian Jessie you must also install the Boost libraries (this takes a while):
 ```
 sudo apt-get install libboost-all-dev
 ```
@@ -112,12 +93,12 @@ make install
 
 Cleaning up and restarting
 --------------------------
-Once everything is installed it is OK to remove the downloaded repostories. 
-Howerver, if you want to reserve the option to remove the software later 
-you migh want to keep the HATPowerBoard repository. If you choose to remove the repositories
-issue these commands:
-```
-rm -rf wiringPi
+Once everything is installed it is OK to remove the downloaded repostory. 
+However, if you want to reserve the option to remove the software later 
+you migh want to keep the HATPowerBoard repository. 
+
+If you choose to remove the repositories issue these commands: 
+``` 
 rm -rf HATPowerBoard
 ```
 
@@ -127,8 +108,65 @@ shutdown -r now
 ```
 Uninstalling
 ------------
-To unistall rocpmd enter the root of the HATPowerBoard repository you downloaded and 
+To unistall rocpmd cd into the HATPowerBoard directory you downloaded and 
 issue the command:
 ```
 make uninstall
 ```
+Analog to Digital Converter
+===========================
+The PowerHAT has a built in MCP4004 4-channel analog to digital converter. The A2D converter
+driver is loaded by the OS when the system detects that the PowerHAT is attahed to the Raspberry Pi.
+
+The MCP4004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
+
+```
+pi@raspberrypi$ sudo rpi-update
+```
+
+The driver enables simple access to the four channels via sysfs-type accesses.  For example,
+to obtain the analog values issue:
+
+```
+pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
+2
+2
+2
+2
+
+```
+,the current value on the four channels of the A2D converter.
+
+When the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This may render the A2D 
+inaccessible via some libraries, for example, WiringPi.  Automatic loading 
+of the MCP4004 driver can be inhibited by placing:
+
+```
+dtparam=rocusespi=yes,rocusedriver=no 
+```
+in /boot/config.txt before any other dtoverlay commands in config.txt.  
+
+
+Customization
+=============
+The PowerHAT must be shipped such that it functions by default in HAT compliant systems when it is installed.  
+However, if multiple HAT's are used, if other peripherals are used the conflict with the GPIO's
+used on the PowerHAT, or if it is used on a non-HAT compliant system, it is possible to assign the 
+PowerHAT control functions to other GPIO channels. 
+
+Each of the GPIO channels are connected to the control input/outputs with a soldered-in 
+0 ohm jumper.  To rewire the GPIO's to new channels, the 0 ohm resistors related to the
+changing channels must be removed. The PowerHAT also has each of the pins on P1 connector broken out as well
+as the control signals themselves, so it is easy to install a wires to make the new connections. 
+Please refer to the PowerHAT hardware description shipped with the PowerHAT and available at redoakcanyon.com.
+
+With this release, it is necessary to change the control function to GPIO channel mapping in two places: in the 
+rocpmd configuration file, /etc/rocpmd.config, and in /boot/config.txt using device-tree-overlay parameters.  
+Please see 
+
+```
+man rocpmd 
+man roc-device-tree
+```
+after installation for more information.
+
