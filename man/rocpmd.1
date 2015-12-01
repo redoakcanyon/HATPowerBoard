@@ -29,14 +29,15 @@ ROCPMD \- Power management daemon for Red Oak Canyon PowerHAT power management b
 
 .SH DESCRIPTION
 \fBrocpmd\fR is a daemon that interfaces with a Red Oak Canyon PowerHAT power managment expansion board for the 
-Raspberry PI computer. The daemon provides a number of functions including a socket server 
-that enables the remote querying of the battery battery level over a berkley socket, logging of 
+Raspberry PI computer. The daemon provides a number of functions including
+querying of the battery battery level in percent or raw comparator units, logging of 
 battery levels to a separate file (rotated on each system start) and the graceful shutdown of the 
 Raspberry PI by either pressing the on/off button or when the daemon detects the battery is about to 
 be depleted.
 
 .SH STARTING AND STOPPING THE DAEMON
-The \fBrocpmd\fR daemon can be started manually by issuing the following command:
+The \fBrocpmd\fR daemon is usually started automatically at boot-up, but can be started manually by 
+issuing the following command:
 
     sudo /etc/init.d/rocpmd.sh start
 
@@ -73,18 +74,7 @@ Verbose output during startup. Useful in combination with \fB\-\^\-no-daemon\fR 
 .BR \fB\-\^\-help\fR
 Output a usage message and exit.
 
-.SS Network Options
-.TP
-.BR \fB\-\^\-socket\fR
-Causes \fBrocpmd\fR to spawn a berkley socket server that allows a remote process to query the 
-battery status.
-
 .SS Power Level Functions
-.TP
-.BR \fB\-\^\-power-off\fR
-The daemon sends the OFF signal to the power board causing the power to the Raspberry PI to be cut 
-immediately and the board to enter the POWER_OFF state. The daemon exits immediately afterwards 
-rather than going into daemon mode. (This is not a safe shutdown!)
 
 .TP
 .BR \fB\-\^\-battery-level\fR
@@ -96,6 +86,12 @@ going into daemon mode.
 Outputs the current battery level in batterly level comparator increments. The daemon exits 
 immediately afterwards rather than going into daemon mode.
 
+.TP
+.BR \fB\-\^\-power-off\fR
+The daemon sends the OFF signal to the power board causing the power to the Raspberry PI to be cut 
+immediately and the board to enter the POWER_OFF state. If for some reason the power does not
+turn off, the daemon exits immediately afterwards rather than going into daemon mode. 
+(This is not a safe shutdown!)
 
 .SH "THE DAEMON CONFIGURATION FILE"
 The \fBrocpmd\fR configuration file is written in the 
@@ -115,8 +111,8 @@ level values to a percentage of battery left.
 The GPIO (general input/output signal) section of the configuration file defines the mapping and 
 configuration (input/output) of the general purpose input/output (GPIO) pins used by the Red Oak 
 power managment board. These values do not need to be modified unless the GPIO connections on the 
-power board itself have been modified, for example, to adapt the board to a Raspberry Pi 
-Rev B, or to resolve other GPIO conflicts. 
+power board itself have been modified, for example, to resolve GPIO conflicts with other peripherals,
+or to adapt the board to a non HAT compliant Raspberry Pi.
 
 .br
 
@@ -124,6 +120,14 @@ The board has some I/O's that are active low and others that are active high. Fo
 I/O's the asserted (TRUE) state is represented as a high (3.3V) voltage in the circuit.
 For active low I/O's (distinguished by a _B suffix) the asserted (TRUE) state is represented
 as a low (0V) voltage in the circuit.
+
+.br
+
+Some I/O's require a pull-up to function correctly.  If a pin requires a pull-up, the 
+pin definition in the device-tree blob that loaded from the EEPROM on the PowerHAT will configure
+the pin automatically.  If the board has been adapted to different GPIO pins, the new pin mapping 
+should be modified in the rocmpd.config and *also* by dtparam= commands placed in /boot/config.txt.  
+Please refer to the readme in the device-tree directory of the distribution.
 
 Each entry in the GPIO section of the config file contains three fields:
 
@@ -166,10 +170,10 @@ level.  It will be low otherwise. This is an open drain signal and requires the 
 configured.
 
 \fID1_B\fR \- (GPIO input) If the battery is being charged this signal is asserted (set low), if the 
-battery is finished charging it is negated (set high). 
+battery is finished charging it is negated (set high).  This I/O requires a pull-up. 
 
 \fID2_B\fR \- (GPIO input) If the PowerHAT is connected to external power this signal 
-is asserted (set low), otherwise it is negated (set high).
+is asserted (set low), otherwise it is negated (set high).  This I/O requires a pull-up.
 
 .LP
 
@@ -185,22 +189,24 @@ three fields.
 GPIO signal is changed during battery level checks. 
 
 \fIbattery-level-log\fR \- If set to 'true' a battery level log is written to 
-/var/log/rocpmd-battery-level.log.
+/var/log/rocpmd-battery-level.log. The log contains the date, time, the raw level, and the percent level.
+The log file is rotated on each boot, maintaining one previous boot log.
 
 .SS powermap
 
 The powermap is an array of values that map the battery voltage (in compartor level units) output 
 by the PowerHAT's internal battery level measurement circuit, to percentages of battery charge 
 remaining. The powermap for a specific application and/or battery load condition can be customized 
-by using the daemon function \fB\-\^\-battery-level-raw\fR to observe the battery discharge curve in 
-compartor units over time, and then establishing the percentage battery remaining map (powermap).
+by using the daemon function \fB\-\^\-battery-level-raw\fR or by enabling \fBbattery-level-log\fR  
+to observe the battery discharge curve in compartor units over time, and then establishing the 
+percentage battery remaining map (powermap).
 
 The PowerHAT contains a buck/boost (DC-DC) converter that enables the board to supply 5V for 
 battery volages that vary between 4.2V and 2.7V.  Before modifying the map, or using a battery 
 other than the one shipped with the power board, the user should uderstand the total system 
 current load at 5V (ie, the system power) and ensure that when the battery is in a low voltage 
 state (ie, at 2.7V) the current does not exceed the battery's specifications or discharge rate 
-(current = power/(2.7V * .85)). (The .85 factor is to account for the conveter efficiency.) Do i
+(current = power/(2.7V * .85)). (The .85 factor is to account for the conveter efficiency.) Do 
 not use a battery with less than 1500mAh capacity.
 
 .SH "OPERATION"
@@ -209,8 +215,8 @@ not use a battery with less than 1500mAh capacity.
 
 .TP
 \fBThe Power Board State Machine\fR
-The power functions of the Red Oak Canyon PowerHAT is a simple state machine 
-controlled by the OFF signal or the power button on the board. 
+The power controller of the Red Oak Canyon PowerHAT is a simple state machine 
+driven by the OFF signal or the power button on the board. 
 The state machine has three states \fBPOWER_OFF\fR, \fBPOWER_ON\fR, and \fBREQ_OFF\fR: 
 .br
 .BR
@@ -232,10 +238,10 @@ then boots by power-on-reset.
 With the Raspberry Pi powered, when the user presses the momentary on/off button, the PowerHAT
 progresses to the \fBREQ_OFF\fR state and asserts the REQ_OFF_B signal (low) to the Raspberry PI. 
 
-REQ_OFF_B is monitored by the \fBrocpmd\fR daemon.  When it detects that the signal asserted 
+REQ_OFF_B (request off) is monitored by the \fBrocpmd\fR daemon.  When the daemon detects that the signal asserted 
 (went low), it initiates a graceful shutdown of the Linux operating system. As a final step in the 
 shutdown sequence, an instance of the daemon running in command mode asserts a final OFF signal to 
-the PowerHAT causing it to progress from \fBREQ_OFF\fR to the \fBPOWER_OFF\fR state and cut 
+the PowerHAT causing the controller to progress from \fBREQ_OFF\fR to the \fBPOWER_OFF\fR state and cut 
 power to the Raspberry PI. 
 
 .TP
@@ -244,7 +250,7 @@ power to the Raspberry PI.
 When the \fBrocpmd\fR daemon detects a low battery condition via the battery level test, it 
 initiates a safe shutdown of the Linux operating system via the system shutdown command. 
 As a final step to the shutdown squence, the \fBrocpmd\fR daemon running in command mode asserts 
-the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR 
+the OFF signal twice to advance the controller state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR 
 state, to the \fBPOWER_OFF\fR state, and cuts power to the Raspberry PI. 
 
 .TP
@@ -252,7 +258,7 @@ state, to the \fBPOWER_OFF\fR state, and cuts power to the Raspberry PI.
 .br
 If the OS is shutdown using the shutdown -h -P now command, or, in Jessie, with sudo poweroff, the system 
 will shutdown.   As a final step to the shutdown sequence, the \fBrocpmd\fR daemon running in command mode 
-asserts the OFF signal twice to advance the state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR 
+asserts the OFF signal twice to advance the controller state machine from \fBPOWER_ON\fR, through the \fBREQ_OFF\fR 
 state, to the \fBPOWER_OFF\fR state and cuts power to the Raspberry PI. 
 
 .TP
@@ -276,7 +282,15 @@ The number of UD_B pulses required for the PGOOD signal to go low (the raw value
 percentage battery remaining using the power level map array that \fBrocpmd\fR read from the 
 configuration file.
 
+During a battery charge cycle, the voltage across the battery terminals does not represent the charge state.  Therefore,
+if the battery level is queried during a charge cycle, the daemon will return \fBCharging\fR instead of the battery level or
+raw level.  If \fBbattery-level-logging\fR is enabled, the charge cycle is logged as -1 for the battery and 
+raw levels.
+
 .SS SEE ALSO
-The project source code can be obtained at 
+The project source code can be obtained at: 
 .URL https://github.com/readoakcanyon/HATPowerBoard/ "GitHub"
+
+Red Oak Canyon web site:
+.URL http://redoakcanyon.com
 
