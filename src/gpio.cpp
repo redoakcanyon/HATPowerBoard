@@ -190,7 +190,7 @@ int gpio_init(config *conf)
     status = gpio_set_pin_direction(pgood.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // D1
+    // D1 (Charge indicator)
     // input, pull_up
     config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
 
@@ -201,7 +201,7 @@ int gpio_init(config *conf)
     status = gpio_set_pin_direction(d1.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
-    // D2
+    // D2 (Power connect indicator)
     // input, pull_up
     config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
 
