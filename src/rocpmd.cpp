@@ -121,6 +121,25 @@ void log_and_report(int priority, string prefix, string postfix)
 		syslog(priority, msg.str().c_str());
 }
 
+int map_battery_level(config * conf, int battery_level_raw)
+{
+    int battery_level_percent = -1;
+
+    syslog(LOG_CRIT, "battery_level_raw = %d", battery_level_raw);
+
+    // The battery level reading is not reliable when the wall wart is connected
+    // in which case the gpio_read_battery_level_raw() function will return -1
+    // so in the interest of uniformity the percentage power level is also set to
+    // -1 to indicate charging status.
+    if(battery_level_raw >= 0)
+    {
+        battery_level_percent = conf->get_powermap_element_at(battery_level_raw);
+    }
+
+    syslog(LOG_CRIT, "battery_level_percent = %d", battery_level_percent);
+
+    return battery_level_percent;
+}
 
 // -----------------------------
 // Classes and structures
@@ -184,6 +203,12 @@ int rocpmd::daemon_main(config *conf)
 	msg<<"Starting rocpmd (pid: " << get_pid() << ")";
     log_and_report(LOG_CRIT, msg.str(), "");
 
+    battery_level_raw = gpio_read_battery_level_raw(conf);
+    battery_level_percent = map_battery_level(conf, battery_level_raw);
+
+    ud->set_battery_level_percent(battery_level_percent);
+    ud->set_battery_level_raw(battery_level_raw);
+
 	while(true)
     {
 		usleep(100000);
@@ -197,7 +222,9 @@ int rocpmd::daemon_main(config *conf)
         if(battery_level_read_interval_expired(conf))
         {
             battery_level_raw = gpio_read_battery_level_raw(conf);
-    
+            battery_level_percent = map_battery_level(conf, battery_level_raw);
+
+            /*
             // The battery level reading is not reliable when the wall wart is connected
             // in which case the gpio_read_battery_level_raw() function will return -1
             // so in the interest of uniformity the percentage power level is also set to
@@ -210,6 +237,7 @@ int rocpmd::daemon_main(config *conf)
             {
                 battery_level_percent = -1;
             }
+            */
     
             ud->set_battery_level_percent(battery_level_percent);
             ud->set_battery_level_raw(battery_level_raw);
