@@ -63,6 +63,7 @@ In the event that the control function to gpio channel is changed in hardware, t
 device-tree for the board to operate properly.  This can be accomplished two ways:
 
 1) overriding the pre-programmed value by including dtparam= commands in /boot/config.txt (preferred)
+
 2) editing and recompling the device-tree blob in HATPowerBoard/device-tree and placing the result in /boot/overlays.
 
 As option 1 has been provided and option 2 is beyond the scope of this man page, option 2 will be left as 
@@ -75,8 +76,8 @@ dtpram=roc_req_off=17
 
 into /boot/config.txt.  Use one dtparam= command for each of the pins that require overriding.
 
-/fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
-in the config.txt file!!/fR
+\fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
+in the config.txt file!!\fR
 
 .SS Analog to Digital Converter Information
 
@@ -90,9 +91,9 @@ The two parameters and their legal values are:
  rocusedriver=<yes or no>
  rocusespi=<no or yes>
 
-/fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
+\fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
 in the config.txt file.  Also, only one of these parameters should be defined as "yes" or there will be
-a boot error and neither will work./fR
+a boot error and neither will work.\fR
 
 .SHADAPTING TO NON-HAT Raspberry Pi's
 
@@ -115,12 +116,16 @@ The loading of the PowerHAT EEPROM can be completly disabled by adding:
 
 dtoverlay=
 
-/fBBEFORE/fR any other dtoverlay= command.
+\fBBEFORE\fR any other dtoverlay= command.
 
 
 .SH SEE ALSO
 man rocpmd
+
 HATPowerBoard/README.md
+
 HATPowerBoard/device-tree/rocpower-overlay.dts
+
 .URL http://redoakcanyon.com
+
 .URL https://www.raspberrypi.org/documentation/configuration/device-tree.md
