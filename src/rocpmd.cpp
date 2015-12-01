@@ -388,8 +388,9 @@ int main(int argc, char **argv)
 
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
 
-    if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
-         rocpmd_status != ROCPMD_PROCESS_LIVES )
+    // if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
+    //     rocpmd_status != ROCPMD_PROCESS_LIVES )
+    if(rocpmd_status != ROCPMD_PROCESS_LIVES )
     {
         log_and_report(LOG_CRIT, "Initializing GPIO...","" );
         gpio_init(conf);
@@ -416,8 +417,11 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
 
-        if(rocpmd_status != ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
+        //if(rocpmd_status != ROCPMD_LOCKFILE_MISSING || rocpmd_status == ROCPMD_PROCESS_LIVES)
+        if(rocpmd_status == ROCPMD_PROCESS_LIVES)
         {
+            syslog(LOG_INFO, "Battery read by UD");
+
             if(opts.is_battery_level_raw())
             {
                 int raw_power = ud_client_send_command(ROCPMD_SEND_POWER_LEVEL_RAW);
@@ -448,6 +452,8 @@ int main(int argc, char **argv)
         }
         else
         {
+            syslog(LOG_INFO, "Battery read by SYSFS");
+
             raw_power = gpio_read_battery_level_raw(conf);
 
             if(raw_power >= 0)

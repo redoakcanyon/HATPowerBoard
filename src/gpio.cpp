@@ -137,6 +137,8 @@ int gpio_init(config *conf)
     // output, none
     config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
 
+    syslog(LOG_INFO, "Configuring OFF");
+
     status = gpio_init_pin(off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(off.bcm_pin, OUTPUT);
@@ -145,6 +147,9 @@ int gpio_init(config *conf)
     // REQ_OFF
     // input, pull_up
     config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
+
+    syslog(LOG_INFO, "Configuring REQ_OFF");
+
     status = gpio_init_pin(req_off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(req_off.bcm_pin, INPUT);
@@ -153,6 +158,9 @@ int gpio_init(config *conf)
     // CS
     // output, none
     config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
+
+    syslog(LOG_INFO, "Configuring CS");
+
     status = gpio_init_pin(cs.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(cs.bcm_pin, OUTPUT);
@@ -163,6 +171,9 @@ int gpio_init(config *conf)
     // UD
     // output, none
     config_gpio ud = conf->get_gpio_by_role(CFG_ROLE_UD_B);
+
+    syslog(LOG_INFO, "Initializing UD");
+
     status = gpio_init_pin(ud.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(ud.bcm_pin, OUTPUT);
@@ -171,6 +182,9 @@ int gpio_init(config *conf)
     // PGOOD
     // input, pull_up
     config_gpio pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B);
+
+    syslog(LOG_INFO, "Initializing PGOOD");
+
     status = gpio_init_pin(pgood.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(pgood.bcm_pin, INPUT);
@@ -179,6 +193,9 @@ int gpio_init(config *conf)
     // D1
     // input, pull_up
     config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
+
+    syslog(LOG_INFO, "Initializing D1");
+
     status = gpio_init_pin(d1.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(d1.bcm_pin, INPUT);
@@ -187,10 +204,15 @@ int gpio_init(config *conf)
     // D2
     // input, pull_up
     config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
+
+    syslog(LOG_INFO, "Initializing D2");
+
     status = gpio_init_pin(d2.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
     status = gpio_set_pin_direction(d2.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
+
+    syslog(LOG_INFO, "Done initializing GPIO");
 
     return GPIO_SUCCESS;
 }
