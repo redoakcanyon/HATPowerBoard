@@ -41,7 +41,7 @@ else
 	sudo cp scripts/$(KILLPOWER_NAME).sh $(BOOT_SCRIPT_DIR)/
 	sudo update-rc.d -f rockillpower.sh defaults
 endif
-	sudo cp man/rocpmd.1 /usr/local/share/man/man1/
+	sudo cp man/rocpmd.1 /usr/share/man/man1/
 	sudo mandb > /dev/null 2>&1
 
 uninstall:
@@ -56,7 +56,7 @@ else
 	sudo rm -f $(BOOT_SCRIPT_DIR)/$(KILLPOWER_NAME).sh
 	sudo update-rc.d -f rockillpower.sh remove
 endif
-	sudo rm /usr/local/share/man/man1/rocpmd.1
+	sudo rm /usr/share/man/man1/rocpmd.1
 	sudo mandb > /dev/null 2>&1
 
 clean:

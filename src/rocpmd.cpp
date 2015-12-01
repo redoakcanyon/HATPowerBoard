@@ -101,12 +101,7 @@ int rocpmd_instance_lives(string lockfile_path)
 
     lockfile.close();
 
-    syslog(LOG_CRIT, "pid = %s", pid.c_str());
-    syslog(LOG_CRIT, "lockfile_path.c_str() = %s", lockfile_path.c_str());
-
     int kill_stat = kill(atoi(pid.c_str()), 0);
-
-    syslog(LOG_CRIT, "kill(atoi(pid.c_str()) = %d", kill_stat);
 
     /* pid file exists and process lives */ 
     //if(kill(atoi(pid.c_str()), 0) == 0)
@@ -226,8 +221,6 @@ int rocpmd::daemon_main(config *conf)
                     stringstream msg;
                     msg << battery_level_raw << "," << battery_level_percent << "%";
                     battery_level_log->log(msg.str());
-
-                    log_and_report(LOG_CRIT, msg.str(), "");
                 }
                 catch(runtime_error re)
                 {
@@ -261,8 +254,6 @@ int rocpmd::daemon_main(config *conf)
 
 void rocpmd::halt_system()
 {
-    syslog(LOG_CRIT, "/sbin/shutdown -h now");
-    system("sudo /sbin/shutdown -h now");
     exit(EXIT_SUCCESS);
 }
 
@@ -367,8 +358,6 @@ int main(int argc, char **argv)
     }
 
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
-
-    syslog(LOG_CRIT, "rocpmd_status=%d", rocpmd_status);
 
     if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
          rocpmd_status != ROCPMD_PROCESS_LIVES )
