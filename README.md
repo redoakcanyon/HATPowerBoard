@@ -20,21 +20,23 @@ Introduction
 ============
 The PowerHAT with A2D is an intelligent power controller for the Raspberry Pi.  The power
 controller provides for safe shutdown when the on/off button on the PowerHAT is pressed,
-or if the rocpmd daemon detects the battery is about to die.  
+or if the rocpmd daemon detects the battery is about to die.  The daemon also provides 
+a command-line interface to retreive the battery level, and can generate logs of the 
+battery level measurements over time.
 
 The PowerHAT has an integrated 4-channel analog to digital converter that is automatically
-configured so that data is available by reading the data from a sysfs file handle.
+configured so that data is easliy available by reading the data from a sysfs file handle.
 
 Supported Raspberry PI variants
 ===============================
-For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will only work with 
-Raspberry PI variants B+, A+ and 2B, those with a 40-pin connector, so the default software  
+For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work with 
+Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) **out of the box**. The default software  
 configuration is compatible with these variants.  
 
 It is possible to re-wire/modify the PowerHAT GPIO connections and the software 
-configuration so the PowerHAT works with earlier Raspberry PI variants.   See the man page for details.
+configuration so the PowerHAT works with earlier Raspberry PI variants.   See **Customization** below.
 
-The software for the HAT Power Controller Kit
+The software for the PowerHAT Power Controller
 =============================================
 When you install this package on your Raspberry Pi: 
 
@@ -52,15 +54,18 @@ features:
 * Monitors the Power Controller on/off switch. When the switch is pressed 
   (and the raspi is powered), the daemon will initiate shutdown and power off 
   the Raspberry Pi.
-* The deamon provides user access to the current battery level.  After 
-  installation, see the manual file for details:
+* The deamon provides user access to the current battery level.  
+
+After installation, see the manual file for details:
 
 ```
 man rocpmd 
 ```
 
-Installation on your Raspberry Pi
+Installing on your Raspberry Pi
 ---------------------------------
+These are the steps to install the software on your Raspberry Pi
+
 Obtain the git-core and update/upgrade the OS:
 ```
 sudo apt-get install git-core
@@ -68,6 +73,7 @@ sudo apt-get update
 sudo apt-get upgrade
 ```
 Download and install the YAML0.3 library. 
+
 For Raspbian Wheezy:
 ```
 sudo apt-get install libyaml-cpp-dev
@@ -116,7 +122,7 @@ make uninstall
 Analog to Digital Converter
 ===========================
 The PowerHAT has a built in MCP4004 4-channel analog to digital converter. The A2D converter
-driver is loaded by the OS when the system detects that the PowerHAT is attahed to the Raspberry Pi.
+driver is loaded by the OS when the system detects that the PowerHAT is attached to the Raspberry Pi.
 
 The MCP4004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
 
