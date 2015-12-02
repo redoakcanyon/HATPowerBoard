@@ -1,5 +1,24 @@
 /* 
 * Overlay for the Red Oak Canyon PowerHAT
+* Compile : dtc -@ -I dts -O dtb -o rocpower-overlay.dtb rocpower-overlay.dts
+*
+* install :
+* sudo cp rocpower-overlay.dtb /boot/overlays
+* Add this in /boot/config.txt :
+* select to use the mcp3004 driver or use raw spi (Do not choose yes for both)
+*
+* dtoverlay=rocpower-overlay,rocusespi=<yes/no>,rocusedriver=<yes/no> 
+* ref: https://www.kernel.org/doc/Documentation/devicetree/bindings/pinctrl/brcm,bcm2835-gpio.txt
+*
+* dtparams to override power controller pin to bcm gpio pin mapping
+* dtparam=roc_req_off_b=5
+* dtparam=roc_cs_b=6
+* dtparam=roc_off=12
+* dtparam=roc_pgood=13
+* dtparam=roc_ud_b=16
+* dtparam=roc_d1_b=20
+* dtparam=roc_d2_b=26
+*
 */
 /dts-v1/;
 /plugin/;
@@ -62,16 +81,7 @@
          roc_off = <&powerhat_pins>,"brcm,pins:8";
          roc_pgood = <&powerhat_pins>,"brcm,pins:12";
          roc_ud_b = <&powerhat_pins>,"brcm,pins:16";
-         roc_d2_b = <&powerhat_pins>,"brcm,pins:20";
-         roc_d1_b = <&powerhat_pins>,"brcm,pins:24";
+         roc_d1_b = <&powerhat_pins>,"brcm,pins:20";
+         roc_d2_b = <&powerhat_pins>,"brcm,pins:24";
      };
 };
-/*
-Compile : dtc -@ -I dts -O dtb -o mcp320x.dtb mcp320x.dts
-install :
-(Make sure you have selected iio driver for mcp320x when compiling kernel)
-sudo cp mcp320x.dtb /boot/overlays
-Add this in /boot/config.txt :
-dtoverlay=rocpower-overlay,rocusespi=<yes/no>,rocusedriver=<yes/no> (do not choose yes for both)
-ref: https://www.kernel.org/doc/Documentation/devicetree/bindings/pinctrl/brcm,bcm2835-gpio.txt
-*/
