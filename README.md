@@ -29,12 +29,18 @@ configured so that data is easliy available by reading the data from a sysfs fil
 
 Supported Raspberry PI variants
 ===============================
-For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work with 
-Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) **out of the box**. The default software  
+For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work *out-of-the-box* with 
+Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) out of the box. The default software  
 configuration is compatible with these variants.  
 
 It is possible to re-wire/modify the PowerHAT GPIO connections and the software 
-configuration so the PowerHAT works with earlier Raspberry PI variants.   See **Customization** below.
+configuration so the PowerHAT works with earlier Raspberry PI variants.   See *Customization* below.
+
+Hardware Installation
+=====================
+PowerHAT board installation and information needed for board modification are contained in
+the hardware directory in this distribution. Please install the hardware prior to 
+installing the software.
 
 The software for the PowerHAT Power Controller
 =============================================
@@ -164,7 +170,7 @@ Each of the GPIO channels are connected to the control input/outputs with a sold
 0 ohm jumper.  To rewire the GPIO's to new channels, the 0 ohm resistors related to the
 changing channels must be removed. The PowerHAT also has each of the pins on P1 connector broken out as well
 as the control signals themselves, so it is easy to install a wires to make the new connections. 
-Please refer to the PowerHAT hardware description shipped with the PowerHAT and available at redoakcanyon.com.
+Please refer to the PowerHAT hardware information in the hardware directory of the distribution.
 
 With this release, it is necessary to change the control function to GPIO channel mapping in two places: in the 
 rocpmd configuration file, /etc/rocpmd.config, and in /boot/config.txt using device-tree-overlay parameters.  
