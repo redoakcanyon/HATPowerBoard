@@ -72,6 +72,11 @@ sudo apt-get install git-core
 sudo apt-get update
 sudo apt-get upgrade
 ```
+
+Update the Raspi firmware to get the mcp3004 driver
+```
+sudo rpi-update
+```
 Download and install the YAML0.3 library. 
 
 For Raspbian Wheezy:
