@@ -20,26 +20,26 @@ Introduction
 ============
 The PowerHAT with A2D is an intelligent power controller for the Raspberry Pi.  The power
 controller provides for safe shutdown when the on/off button on the PowerHAT is pressed,
-or if the rocpmd daemon detects the battery is about to die.  The daemon also provides 
-a command-line interface to retreive the battery level, and can generate logs of the 
+or if the rocpmd daemon detects the battery is about to die.  The daemon also provides
+a command-line interface to retreive the battery level, and can generate logs of the
 battery level measurements over time.
 
 The PowerHAT has an integrated 4-channel analog to digital converter that is automatically
 configured so that data is easliy available by reading the data from a sysfs file handle.
 
-Supported Raspberry PI variants
+Supported Raspberry PI Variants
 ===============================
-For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work *out-of-the-box* with 
-Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) out of the box. The default software  
-configuration is compatible with these variants.  
+For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work *out-of-the-box* with
+Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) out of the box. The default software
+configuration is compatible with these variants.
 
-It is possible to re-wire/modify the PowerHAT GPIO connections and the software 
+It is possible to re-wire/modify the PowerHAT GPIO connections and the software
 configuration so the PowerHAT works with earlier Raspberry PI variants.   See *Customization* below.
 
 Hardware Installation
 =====================
 PowerHAT board installation and information needed for board modification are contained in
-the hardware directory in this distribution. Please install the hardware prior to 
+the [hardware directory](./hardware/PowerHATHardwareRef.pdf). Please install the hardware prior to 
 installing the software.
 
 The software for the PowerHAT Power Controller
