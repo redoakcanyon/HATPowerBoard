@@ -81,10 +81,10 @@ in the config.txt file!!\fR
 
 .SS Analog to Digital Converter Information
 
-The MCP4004 four channel analog to digital converter is also described in the device-tree blob.  Describing it
+The MCP3004 four channel analog to digital converter is also described in the device-tree blob.  Describing it
 in the device-tree causes Raspbian to automatically load the module at boot time.  While there are definate
 advantages to this, there are some disadvantage too, so the device-tree blob has parameters defined to control
-the automatic loading of the module via dtparam= commands in placed into /boot/config.txt.
+the automatic loading of the module via dtparam= commands placed into /boot/config.txt.
 
 The two parameters and their legal values are:
 
@@ -93,13 +93,13 @@ The two parameters and their legal values are:
 
 \fBNOTE:  It is very important that  dtparam= commands be placed prior to any other dtoverlay= command
 in the config.txt file.  Also, only one of these parameters should be defined as "yes" or there will be
-a boot error and neither will work.\fR
+a boot error and neither option will work.\fR
 
 .SHADAPTING TO NON-HAT Raspberry Pi's
 
 When the PowerHAT is installed on a non-HAT compliant Raspberry Pi, the I2C used for the PowerHAT EEPROM is not 
 available on the P1 connector, yet the device-tree blob is still required for proper operation.  In these cases,
-the device-tree blob can be specified to be loaded from /boot/overlays in the /boot/config.txt:
+the device-tree blob can be loaded from /boot/overlays using a dtoverlay= command in the /boot/config.txt:
 
 First:
 sudo cp HATPowerBoard/device=tree/rocpower-overlay.dtb /boot/overlays/.
@@ -107,7 +107,7 @@ sudo cp HATPowerBoard/device=tree/rocpower-overlay.dtb /boot/overlays/.
 then add:
 dtoverlay=rocpower-overlay 
 
-to the end of config.txt.  Any dtparam= commands required to remap the gpios should be placed immediately after the
+to the \fBEND\fR of config.txt.  Any dtparam= commands required to remap the gpios should be placed immediately \fBAFTER\fR the
 dtoverlay=rocpower-overlay command an before any other dtoverlay=commands.
 
 .SHDISABLING LOADING of the EEPROM
@@ -120,12 +120,23 @@ dtoverlay=
 
 
 .SH SEE ALSO
-man rocpmd
+.SS Regular man pages
+rocpmd(1)
 
-HATPowerBoard/README.md
+.SS Project Readme
+.URL https://github.com/readoakcanyon/HATPowerBoard/README.md
 
-HATPowerBoard/device-tree/rocpower-overlay.dts
+.SS The Device Tree Overlay
+The Raspberry PI foundation's device tree documentation:
+.br
+.URL https://www.raspberrypi.org/documentation/configuration/device-tree.md
+.br
+The Red Oak canyon device tree source:
+.br
+.URL https://github.com/redoakcanyon/HATPowerBoard/blob/hardware/device-tree/rocpower-overlay.dts
 
+.SS Websites
+The Red Oak Canyon web site:
 .URL http://redoakcanyon.com
 
-.URL https://www.raspberrypi.org/documentation/configuration/device-tree.md
+

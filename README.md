@@ -20,21 +20,27 @@ Introduction
 ============
 The PowerHAT with A2D is an intelligent power controller for the Raspberry Pi.  The power
 controller provides for safe shutdown when the on/off button on the PowerHAT is pressed,
-or if the rocpmd daemon detects the battery is about to die.  The daemon also provides 
-a command-line interface to retreive the battery level, and can generate logs of the 
+or if the rocpmd daemon detects the battery is about to die.  The daemon also provides
+a command-line interface to retreive the battery level, and can generate logs of the
 battery level measurements over time.
 
-The PowerHAT has an integrated 4-channel analog to digital converter that is automatically
+The PowerHAT has an integrated MCP3004 4-channel analog to digital converter.  The A2D is automatically
 configured so that data is easliy available by reading the data from a sysfs file handle.
 
-Supported Raspberry PI variants
+Supported Raspberry PI Variants
 ===============================
-For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work with 
-Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) **out of the box**. The default software  
-configuration is compatible with these variants.  
+For the PowerHAT to be HAT compliant, the hardware must be shipped in a form that will work *out-of-the-box* with
+Raspberry PI variants B+, A+ and 2B (those with a 40-pin connector) out of the box. The default software
+configuration is compatible with these variants.
 
-It is possible to re-wire/modify the PowerHAT GPIO connections and the software 
-configuration so the PowerHAT works with earlier Raspberry PI variants.   See **Customization** below.
+It is possible to re-wire/modify the PowerHAT GPIO connections and the software
+configuration so the PowerHAT works with earlier Raspberry PI variants.   See *Customization* below.
+
+Hardware Installation
+=====================
+PowerHAT board installation and information needed for board modification are contained in
+the [hardware directory](./hardware/PowerHATHardwareRef.pdf). Please install the hardware prior to 
+installing the software.
 
 The software for the PowerHAT Power Controller
 =============================================
@@ -42,9 +48,9 @@ When you install this package on your Raspberry Pi:
 
 1. Startup and shutdown scripts will be added to your init.d directory and links
    from the appropriate rcn.d directory will be installed to point back to them. For
-   systemd init systems, a power-off script will be placed in /lib/systemd/system-shutdown.
+   systemd init systems, a power-off script will be placed in `/lib/systemd/system-shutdown`.
 
-2. The rocpmd power monitor daemon executable will be placed into /usr/sbin.
+2. The rocpmd power monitor daemon executable will be placed into `/usr/sbin`.
 
 The installation arranges for the daemon to be startup during boot.  The daemon has the following
 features:
@@ -126,18 +132,25 @@ make uninstall
 ```
 Analog to Digital Converter
 ===========================
-The PowerHAT has a built in MCP4004 4-channel analog to digital converter. The A2D converter
+The PowerHAT has a built in MCP3004 4-channel analog to digital converter. The A2D converter
 driver is loaded by the OS when the system detects that the PowerHAT is attached to the Raspberry Pi.
 
-The MCP4004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
+The MCP3004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
 
 ```
 pi@raspberrypi$ sudo rpi-update
 ```
 
 The driver enables simple access to the four channels via sysfs-type accesses.  For example,
-to obtain the analog values issue:
+to obtain the analog value on channel 2 of the A2D converter issue the following command:
 
+```
+pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage2_raw
+2
+
+
+```
+To obtain the analog value on all four channels of the A2D converter issue the following command:
 ```
 pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
 2
@@ -146,16 +159,20 @@ pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
 2
 
 ```
-,the current value on the four channels of the A2D converter.
 
-When the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This may render the A2D 
-inaccessible via some libraries, for example, WiringPi.  Automatic loading 
-of the MCP4004 driver can be inhibited by placing:
+The A2D device files in the `/sys/bus/iio/devices` directory tree can also be accesed programmatically 
+using basic C/C++/Python file I/O.
+
+We currently recommend using the SYSFS interface for interacting with the A2D converter either by the 
+command line or by some form of programmatic file I/O. If you choose to use another interface for this 
+purpose please note that when the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This 
+may render the A2D inaccessible via some libraries, for example, WiringPi. In this cases automatic 
+loading of the MCP3004 driver can be inhibited by placing the follwing line of text:
 
 ```
 dtparam=rocusespi=yes,rocusedriver=no 
 ```
-in /boot/config.txt before any other dtoverlay commands in config.txt.  
+into the `/boot/config.txt` file before any other dtoverlay commands in config.txt.  
 
 
 Customization
@@ -169,10 +186,10 @@ Each of the GPIO channels are connected to the control input/outputs with a sold
 0 ohm jumper.  To rewire the GPIO's to new channels, the 0 ohm resistors related to the
 changing channels must be removed. The PowerHAT also has each of the pins on P1 connector broken out as well
 as the control signals themselves, so it is easy to install a wires to make the new connections. 
-Please refer to the PowerHAT hardware description shipped with the PowerHAT and available at redoakcanyon.com.
+Please refer to the PowerHAT hardware information in the hardware directory of the distribution.
 
 With this release, it is necessary to change the control function to GPIO channel mapping in two places: in the 
-rocpmd configuration file, /etc/rocpmd.config, and in /boot/config.txt using device-tree-overlay parameters.  
+rocpmd configuration file, `/etc/rocpmd.config`, and in `/boot/config.txt` using device-tree-overlay parameters.  
 Please see 
 
 ```
