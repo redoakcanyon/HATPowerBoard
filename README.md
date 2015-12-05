@@ -158,11 +158,11 @@ pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
 The A2D device files in the `/sys/bus/iio/devices` directory tree can also be accesed programmatically 
 using basic C/C++/Python file I/O.
 
-We currently recommend using the SYSFS interface for interacting with the S2D converter either by the 
+We currently recommend using the SYSFS interface for interacting with the A2D converter either by the 
 command line or by some form of programmatic file I/O. If you choose to use another interface for this 
 purpose please note that when the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This 
 may render the A2D inaccessible via some libraries, for example, WiringPi. In this cases automatic 
-loading of the MCP4004 driver can be inhibited by placing the follwoin line of text:
+loading of the MCP3004 driver can be inhibited by placing the follwing line of text:
 
 ```
 dtparam=rocusespi=yes,rocusedriver=no 
