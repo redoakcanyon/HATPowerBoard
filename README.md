@@ -48,9 +48,9 @@ When you install this package on your Raspberry Pi:
 
 1. Startup and shutdown scripts will be added to your init.d directory and links
    from the appropriate rcn.d directory will be installed to point back to them. For
-   systemd init systems, a power-off script will be placed in /lib/systemd/system-shutdown.
+   systemd init systems, a power-off script will be placed in `/lib/systemd/system-shutdown`.
 
-2. The rocpmd power monitor daemon executable will be placed into /usr/sbin.
+2. The rocpmd power monitor daemon executable will be placed into `/usr/sbin`.
 
 The installation arranges for the daemon to be startup during boot.  The daemon has the following
 features:
@@ -137,8 +137,15 @@ pi@raspberrypi$ sudo rpi-update
 ```
 
 The driver enables simple access to the four channels via sysfs-type accesses.  For example,
-to obtain the analog values issue:
+to obtain the analog value on channel 2 of the A2D converter issue the following command:
 
+```
+pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage2_raw
+2
+
+
+```
+To obtain the analog value on all four channels of the A2D converter issue the following command:
 ```
 pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
 2
@@ -147,16 +154,20 @@ pi@raspberrypi $ cat /sys/bus/iio/devices/iio\:device0/in_voltage[0-3]_raw
 2
 
 ```
-,the current value on the four channels of the A2D converter.
 
-When the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This may render the A2D 
-inaccessible via some libraries, for example, WiringPi.  Automatic loading 
-of the MCP4004 driver can be inhibited by placing:
+The A2D device files in the `/sys/bus/iio/devices` directory tree can also be accesed programmatically 
+using basic C/C++/Python file I/O.
+
+We currently recommend using the SYSFS interface for interacting with the S2D converter either by the 
+command line or by some form of programmatic file I/O. If you choose to use another interface for this 
+purpose please note that when the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This 
+may render the A2D inaccessible via some libraries, for example, WiringPi. In this cases automatic 
+loading of the MCP4004 driver can be inhibited by placing the follwoin line of text:
 
 ```
 dtparam=rocusespi=yes,rocusedriver=no 
 ```
-in /boot/config.txt before any other dtoverlay commands in config.txt.  
+into the `/boot/config.txt` file before any other dtoverlay commands in config.txt.  
 
 
 Customization
@@ -173,7 +184,7 @@ as the control signals themselves, so it is easy to install a wires to make the 
 Please refer to the PowerHAT hardware information in the hardware directory of the distribution.
 
 With this release, it is necessary to change the control function to GPIO channel mapping in two places: in the 
-rocpmd configuration file, /etc/rocpmd.config, and in /boot/config.txt using device-tree-overlay parameters.  
+rocpmd configuration file, `/etc/rocpmd.config`, and in `/boot/config.txt` using device-tree-overlay parameters.  
 Please see 
 
 ```
