@@ -24,7 +24,7 @@ or if the rocpmd daemon detects the battery is about to die.  The daemon also pr
 a command-line interface to retreive the battery level, and can generate logs of the
 battery level measurements over time.
 
-The PowerHAT has an integrated 4-channel analog to digital converter that is automatically
+The PowerHAT has an integrated MCP3004 4-channel analog to digital converter.  The A2D is automatically
 configured so that data is easliy available by reading the data from a sysfs file handle.
 
 Supported Raspberry PI Variants
@@ -127,10 +127,10 @@ make uninstall
 ```
 Analog to Digital Converter
 ===========================
-The PowerHAT has a built in MCP4004 4-channel analog to digital converter. The A2D converter
+The PowerHAT has a built in MCP3004 4-channel analog to digital converter. The A2D converter
 driver is loaded by the OS when the system detects that the PowerHAT is attached to the Raspberry Pi.
 
-The MCP4004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
+The MCP3004 driver is a recent addition to the firmware. To ensure the driver loads correctly, issue:
 
 ```
 pi@raspberrypi$ sudo rpi-update
