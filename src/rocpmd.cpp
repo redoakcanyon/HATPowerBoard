@@ -63,17 +63,25 @@ using namespace std;
 // Globals
 // -----------------------------
 
+config *g_conf = NULL;
+
 // -----------------------------
 // Functions
 // -----------------------------
 
 void sig_handler(int signo)
 {
-    if (signo == SIGINT)
+    if (signo == SIGINT || signo == SIGHUP || signo == SIGTERM)
     {
         //FIXME: unlink the bloody *.pid file.
+        if(g_conf)
+        {
+            gpio_cleanup(g_conf);
+            delete(g_conf);
+        }
         exit(EXIT_SUCCESS);
     }
+
 }
 
 
@@ -303,6 +311,8 @@ int main(int argc, char **argv)
     bool opt_exit = false;
 
     signal(SIGINT, sig_handler);
+    signal(SIGHUP, sig_handler);
+    signal(SIGTERM, sig_handler);
 
     string daemon_name = "rocpmd";
     string daemon_lockfile_name = daemon_name;
@@ -339,7 +349,6 @@ int main(int argc, char **argv)
         exit (EXIT_FAILURE);
     }
 
-    config *conf = NULL;
     string config_path;
 
     if(opts.get_config_path().length())
@@ -349,7 +358,7 @@ int main(int argc, char **argv)
     
     try
     {        
-        conf = new config(config_path);
+        g_conf = new config(config_path);
     }
     catch(runtime_error e)
     {
@@ -364,7 +373,7 @@ int main(int argc, char **argv)
     if(opts.is_verbose())
     {
         verbose_print_options(opts);
-        verbose_print_config(conf);
+        verbose_print_config(g_conf);
     }
 
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
@@ -374,7 +383,7 @@ int main(int argc, char **argv)
     if(rocpmd_status != ROCPMD_PROCESS_LIVES )
     {
         log_and_report(LOG_CRIT, "Initializing GPIO...","" );
-        gpio_init(conf);
+        gpio_init(g_conf);
     }
 
     if(opts.is_power_off() || 
@@ -435,7 +444,7 @@ int main(int argc, char **argv)
         {
             syslog(LOG_INFO, "Battery read by SYSFS");
 
-            raw_power = gpio_read_battery_level_raw(conf);
+            raw_power = gpio_read_battery_level_raw(g_conf);
 
             if(raw_power >= 0)
             {
@@ -446,7 +455,7 @@ int main(int argc, char **argv)
 
                 if(opts.is_battery_level())
                 {
-                    int percent_power = conf->get_powermap_element_at(raw_power);
+                    int percent_power = g_conf->get_powermap_element_at(raw_power);
                     cout << "Percentage power level: " << percent_power << "%" << endl;
                 }
             }
@@ -460,17 +469,18 @@ int main(int argc, char **argv)
     if(opts.is_power_off())
     {
         log_and_report(LOG_CRIT, "Powering off ... ", "");
-        gpio_write_off(conf);
+        gpio_write_off(g_conf);
     }
 
     if(opt_exit)
     {
+        gpio_cleanup(g_conf);
         exit(EXIT_SUCCESS);
     }
 
     try
     {
-		ROCPMD->run_daemon(conf);
+		ROCPMD->run_daemon(g_conf);
 	}
 	catch(tdaemon_exception e)
     {
@@ -487,7 +497,9 @@ int main(int argc, char **argv)
 		unexpected();
 	}
 
-    delete conf;
+    gpio_cleanup(g_conf);
+
+    delete g_conf;
 
 	return 0;
 } // end main()

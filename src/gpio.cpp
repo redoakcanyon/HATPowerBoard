@@ -40,15 +40,15 @@ using namespace std;
 
 string gpio_map_direction(int direction)
 {
-switch(direction)
-{
-    case INPUT:
-        return "in";
-    case OUTPUT:
-        return "out";
-    default:
-        return "off";
-}
+    switch(direction)
+    {
+        case INPUT:
+            return "in";
+        case OUTPUT:
+            return "out";
+        default:
+            return "off";
+    }
 }
 
 int digitalWrite(int gpionum, int val)
@@ -110,6 +110,21 @@ int gpio_init_pin(int pin_no)
     return GPIO_SUCCESS;
 }
 
+int gpio_cleanup_pin(int pin_no)
+{
+    ofstream unexport_sysfs("/sys/class/gpio/unexport");
+
+    if (unexport_sysfs < 0)
+    {
+        return GPIO_ERROR;
+    }
+
+    unexport_sysfs << pin_no;
+    unexport_sysfs.close();
+
+    return GPIO_SUCCESS;
+}
+
 int gpio_set_pin_direction(int pin_no, int dir)
 {
     string pin_number = to_string(pin_no);
@@ -131,13 +146,11 @@ int gpio_init(config *conf)
 {
     int status = GPIO_SUCCESS;
 
-    // FIXME: Implement error checking
-
     // OFF
     // output, none
     config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
 
-    syslog(LOG_INFO, "Configuring OFF");
+    syslog(LOG_INFO, "Initializing OFF");
 
     status = gpio_init_pin(off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
@@ -148,7 +161,7 @@ int gpio_init(config *conf)
     // input, pull_up
     config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
 
-    syslog(LOG_INFO, "Configuring REQ_OFF");
+    syslog(LOG_INFO, "Initializing REQ_OFF");
 
     status = gpio_init_pin(req_off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
@@ -159,7 +172,7 @@ int gpio_init(config *conf)
     // output, none
     config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
 
-    syslog(LOG_INFO, "Configuring CS");
+    syslog(LOG_INFO, "Initializing CS");
 
     status = gpio_init_pin(cs.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
@@ -213,6 +226,78 @@ int gpio_init(config *conf)
     if(status == GPIO_ERROR) { return status; }
 
     syslog(LOG_INFO, "Done initializing GPIO");
+
+    return GPIO_SUCCESS;
+}
+
+int gpio_cleanup(config *conf)
+{
+    int status = GPIO_SUCCESS;
+
+    // OFF
+    // output, none
+    config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
+
+    syslog(LOG_INFO, "Cleaning up OFF");
+
+    status = gpio_cleanup_pin(off.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // REQ_OFF
+    // input, pull_up
+    config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
+
+    syslog(LOG_INFO, "Cleaning up REQ_OFF");
+
+    status = gpio_cleanup_pin(req_off.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // CS
+    // output, none
+    config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
+
+    syslog(LOG_INFO, "Cleaning up CS");
+
+    status = gpio_cleanup_pin(cs.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // UD
+    // output, none
+    config_gpio ud = conf->get_gpio_by_role(CFG_ROLE_UD_B);
+
+    syslog(LOG_INFO, "Cleaning up UD");
+
+    status = gpio_cleanup_pin(ud.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // PGOOD
+    // input, pull_up
+    config_gpio pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B);
+
+    syslog(LOG_INFO, "Cleaning up PGOOD");
+
+    status = gpio_cleanup_pin(pgood.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // D1 (Charge indicator)
+    // input, pull_up
+    config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
+
+    syslog(LOG_INFO, "Cleaning up D1");
+
+    status = gpio_cleanup_pin(d1.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    // D2 (Power connect indicator)
+    // input, pull_up
+    config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
+
+    syslog(LOG_INFO, "Cleaning up D2");
+
+    status = gpio_cleanup_pin(d2.bcm_pin);
+    if(status == GPIO_ERROR) { return status; }
+
+    syslog(LOG_INFO, "Done cleaning up GPIO");
 
     return GPIO_SUCCESS;
 }

@@ -45,6 +45,7 @@
 #define OUTPUT   6
 
 int gpio_init(config *conf);
+int gpio_cleanup(config *conf);
 int gpio_write_off(config *conf);
 int gpio_read_req_off(config *conf);
 int gpio_read_d1(config *conf);
