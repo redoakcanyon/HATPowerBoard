@@ -76,17 +76,20 @@ class tdaemon{
     private:
         int lock_fd;
 
+        /** Genral cleanup, unlock and delete lock file etc... */
+        void cleanup();
+
     public:
         /** Constructor.*/    
         tdaemon(std::string daemonName, std::string lock_file_name, int daemon_flags);
     
         /** Destructor.*/
-        ~tdaemon();
+        virtual ~tdaemon();
     
         /** This Method is called from main. It calls daemonize and Work(), thus
          * starting the daemon.*/
         int run_daemon(config *conf);
-        
+
         /** The working logic of the daemon should be implemented in this method.*/
         virtual int daemon_main(config *conf) = 0;
     
@@ -167,6 +170,9 @@ class tdaemon{
         
         /** Create lock file to ensure the daemon is a singleton.*/
         int lock();
+
+        /** Unlock lock file */
+        int unlock();
 }; // end class tdaemon
 
 //Base exception class for tdaemon.

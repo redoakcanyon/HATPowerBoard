@@ -42,14 +42,15 @@
 #include <sys/reboot.h>
 #include <sys/time.h>
 
-#include "tdaemon.h"
+//#include "tdaemon.h"
+#include "rocpmd.h"
 #include "command-line.h"
 #include "config.h"
 #include "verbose.h"
 #include "gpio.h"
-#include "ud_server.h"
+//#include "ud_server.h"
 #include "ud_client.h"
-#include "logger.h"
+//#include "logger.h"
 
 #define ROCPMD_LOCKFILE_MISSING       1
 #define ROCPMD_LOCKFILE_NOT_READABLE  2
@@ -64,6 +65,7 @@ using namespace std;
 // -----------------------------
 
 config *g_conf = NULL;
+rocpmd *ROCPMD = NULL;
 
 // -----------------------------
 // Functions
@@ -73,15 +75,19 @@ void sig_handler(int signo)
 {
     if (signo == SIGINT || signo == SIGHUP || signo == SIGTERM)
     {
-        //FIXME: unlink the bloody *.pid file.
         if(g_conf)
         {
             gpio_cleanup(g_conf);
             delete(g_conf);
         }
+
+        if(ROCPMD)
+        {
+            delete(ROCPMD);
+        }
+
         exit(EXIT_SUCCESS);
     }
-
 }
 
 
@@ -149,6 +155,7 @@ int map_battery_level(config * conf, int battery_level_raw)
 // Classes and structures
 // -----------------------------
 
+/*
 class rocpmd: public tdaemon
 {
     
@@ -167,6 +174,7 @@ class rocpmd: public tdaemon
         void halt_system();
         bool battery_level_read_interval_expired(config *conf);
 };
+*/
 
 rocpmd::rocpmd(string daemon_name, string lock_file_name, int daemon_flags)
 : tdaemon(daemon_name, lock_file_name, daemon_flags)
@@ -272,6 +280,12 @@ int rocpmd::daemon_main(config *conf)
 void rocpmd::halt_system()
 {
     system("sudo /sbin/shutdown -h now");
+
+    if(ROCPMD)
+    {
+        delete(ROCPMD);
+    }
+
     exit(EXIT_SUCCESS);
 }
 
@@ -323,10 +337,9 @@ int main(int argc, char **argv)
     if(opts.is_help())
     {
         cmdline_options::usage();
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
-    rocpmd *ROCPMD = NULL;
     try
     {
 		ROCPMD = new rocpmd(daemon_name, daemon_lockfile_name, SINGLETON);
@@ -472,7 +485,7 @@ int main(int argc, char **argv)
         gpio_write_off(g_conf);
     }
 
-    if(opt_exit)
+    if(opt_exit && rocpmd_status != ROCPMD_PROCESS_LIVES)
     {
         gpio_cleanup(g_conf);
         exit(EXIT_SUCCESS);

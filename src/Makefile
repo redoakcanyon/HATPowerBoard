@@ -26,7 +26,7 @@ DAEMON_NAME=rocpmd
 CTRL_CMD_NAME=rocpmd-comm
 
 CC=g++
-CFLAGS=-g -std=gnu++0x -Wall -I$(IDIR)
+CFLAGS=-g -std=c++11 -Wall -I$(IDIR)
 
 LIBS=-lm -lyaml-cpp -lpthread -lrt
 

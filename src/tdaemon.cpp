@@ -56,6 +56,7 @@ tdaemon::tdaemon(string dameonName, string lock_file_name, int daemon_flags):
 
 tdaemon::~tdaemon()
 {
+    cleanup();
 }
 
 int tdaemon::run_daemon(config *conf)
@@ -63,6 +64,13 @@ int tdaemon::run_daemon(config *conf)
     daemonize();
     daemon_main(conf);
     return 0;
+}
+
+void tdaemon::cleanup()
+{
+    unlock();
+    close(lock_fd);
+    unlink(_lockfile_path.c_str());
 }
 
 //virtual int tdaemon::daemon_main(config *conf) = 0;
@@ -226,6 +234,18 @@ int tdaemon::lock()
     struct flock fl;
 
     fl.l_type   = F_WRLCK;
+    fl.l_start  = 0;
+    fl.l_whence = SEEK_SET;
+    fl.l_len    = 0;
+
+    return (fcntl(lock_fd, F_SETLK, &fl));
+}
+
+int tdaemon::unlock()
+{
+    struct flock fl;
+
+    fl.l_type = F_UNLCK;
     fl.l_start  = 0;
     fl.l_whence = SEEK_SET;
     fl.l_len    = 0;
