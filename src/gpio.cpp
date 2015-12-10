@@ -35,6 +35,7 @@ Author:    Kristjan Runarsson
 #include "gpio.h"
 
 #define DELAY(delay) usleep(delay)
+#define PGOOD_SETTLE_DELAY 500000
 
 using namespace std;
 
@@ -377,6 +378,8 @@ int gpio_read_battery_level_raw(config *conf)
         return CHARGING; 
     }
     DELAY(delay);
+    
+    // reset the comparator
 
     status = digitalWrite(pin_no_ud, HIGH);
     if(status == GPIO_ERROR) { return status; }
@@ -403,6 +406,7 @@ int gpio_read_battery_level_raw(config *conf)
     status = digitalWrite(pin_no_cs, HIGH);
     if(status == GPIO_ERROR) { return status; }
     DELAY(delay);
+    DELAY(PGOOD_SETTLE_DELAY); // force a  1/2 second delay for pgood to settle in case no battery is attached.
 
     status_pgood = digitalRead(pin_no_pgood);
     if(status_pgood == GPIO_ERROR) { return status_pgood; }
@@ -415,6 +419,8 @@ int gpio_read_battery_level_raw(config *conf)
     status = digitalWrite(pin_no_cs, LOW);
     if(status == GPIO_ERROR) { return status; }
     DELAY(delay);
+    
+    // read the level now
 
     status_pgood = digitalRead(pin_no_pgood);
     if(status_pgood == GPIO_ERROR) { return status_pgood; }
