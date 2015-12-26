@@ -90,7 +90,6 @@ void sig_handler(int signo)
     }
 }
 
-
 int rocpmd_instance_lives(string lockfile_path)
 {
     // If the lock file does not exist we assume there is no living rocpmd instance.
@@ -149,6 +148,98 @@ int map_battery_level(config * conf, int battery_level_raw)
     }
 
     return battery_level_percent;
+}
+
+bool is_board_installed()
+{
+    string vendor_path = "/proc/device-tree/hat/vendor";
+    string product_id_path = "/proc/device-tree/hat/product_id";
+
+    string error = "";
+
+    error = vendor_path;
+
+    string no_board = " This could be due to a file system error but it most probably means "
+                       "that no Red Oak Canyon Power Management Hat board is installed";
+
+    if(access(vendor_path.c_str(), F_OK) == -1)
+    {
+        error.append(" does not exist.");
+        error.append(no_board);
+        log_and_report(LOG_CRIT, "Error in board detection: ", error.c_str());
+        return false;
+    }
+    else if(access(vendor_path.c_str(), R_OK) == -1)
+    {
+        error.append(" is not readable.");
+        error.append(no_board);
+        log_and_report(LOG_CRIT, "Error in board detection: ", error.c_str());
+        return false;
+    }
+
+    error = product_id_path;
+
+    if(access(product_id_path.c_str(), F_OK) == -1)
+    {
+        error.append(" does not exist.");
+        error.append(no_board);
+        log_and_report(LOG_CRIT, "Error in board detection: ", error.c_str());
+        return false;
+    }
+    else if(access(product_id_path.c_str(), R_OK) == -1)
+    {
+        error.append(" is not readable.");
+        error.append(no_board);
+        log_and_report(LOG_CRIT, "Error in board detection: ", error.c_str());
+        error.append(no_board);
+        return false;
+    }
+
+    string wrong_board = " You appear to have the wrong board installed.";
+
+    ifstream vendor_file (vendor_path, fstream::in);
+    string vendor = "";
+    getline(vendor_file, vendor);
+    vendor_file.close();
+    vendor = vendor.c_str(); // Gets rid of the \0 character at the end.
+
+    string vendor_expected = "Red Oak Canyon LLC";
+
+    error = "the vendor name of the installed board '";
+    error.append(vendor);
+    error.append("' is incorrect.");
+    error.append(wrong_board);
+
+    int length = min(vendor.length(), vendor_expected.length());
+
+    if(vendor.compare(0, length, vendor_expected) != 0)
+    {
+        log_and_report(LOG_CRIT, "Board validation failure: ", error);
+        return false;
+    }
+
+    ifstream product_id_file (product_id_path, fstream::in);
+    string product_id = "";
+    getline(product_id_file, product_id);
+    product_id_file.close();
+    product_id = product_id.c_str(); // Gets rid of the \0 character at the end.
+
+    string product_id_expected = "0x0001";
+
+    error = "the product ID of the installed board '";
+    error.append(product_id);
+    error.append("' is incorrect.");
+    error.append(wrong_board);
+
+    length = min(product_id.length(), product_id_expected.length());
+
+    if(product_id.compare(0, length, product_id_expected) != 0)
+    {
+        log_and_report(LOG_CRIT, "Board validation failure: ", error.c_str());
+        return false;
+    }
+
+    return true;
 }
 
 // -----------------------------
@@ -333,6 +424,11 @@ int main(int argc, char **argv)
     daemon_lockfile_name.append(".pid");
 
     cmdline_options opts(argc, argv);
+
+    if(!is_board_installed())
+    {
+        exit(EXIT_FAILURE);
+    }
 
     if(opts.is_help())
     {

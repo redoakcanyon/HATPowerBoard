@@ -27,7 +27,7 @@ start_daemon()
 
     if [ -e $DAEMON ]
     then
-        $DAEMON --config-path $CONFIG
+        $DAEMON
     else
         echo "Executable '$DAEMON' not found unable to start rocpmd."
     fi
