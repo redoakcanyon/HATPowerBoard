@@ -289,7 +289,10 @@ void operator>>(const Node& node, config_gpio &gpio)
             gpio.direction = OUTPUT;
         }
     }
-
+    else
+    {
+        gpio.direction = CFG_NOVAL;
+    }
 
     if(node.FindValue("resistor"))
     {
@@ -312,6 +315,10 @@ void operator>>(const Node& node, config_gpio &gpio)
         {
             gpio.resistor = PUD_OFF;
         }
+    }
+    else
+    {
+            gpio.resistor = CFG_NOVAL;
     }
 }
 
@@ -350,6 +357,9 @@ void operator>>(const Node& node, config_battery_level_reader &battery_level_rea
     node["battery-level-gpio-delay"] >> battery_level_reader.battery_level_gpio_delay;
     validate_delay(battery_level_reader.battery_level_gpio_delay);
 
+    node["battery-level-pgood-delay"] >> battery_level_reader.battery_level_pgood_delay;
+    validate_delay(battery_level_reader.battery_level_pgood_delay);
+
     string battery_level_log = "";
     node["battery-level-log"] >> battery_level_log;
 
@@ -357,7 +367,7 @@ void operator>>(const Node& node, config_battery_level_reader &battery_level_rea
     {
         battery_level_reader.battery_level_log = true;
     }
-    else // Any value other than true is false.
+    else
     {
         battery_level_reader.battery_level_log = false;
     }

@@ -36,6 +36,8 @@
 
 #define CONFIG_ERR_PREFIX "Configuration File Error: "
 
+#define CFG_NOVAL            0x0
+
 #define CFG_ROLE_CS_B        0x1
 #define CFG_ROLE_OFF         0x2
 #define CFG_ROLE_PGOOD_B     0x3
@@ -67,6 +69,7 @@ struct config_battery_level_reader
 {
     int battery_level_read_interval;
     int battery_level_gpio_delay;
+    int battery_level_pgood_delay;
     bool battery_level_log;
 };
 

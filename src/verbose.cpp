@@ -96,18 +96,23 @@ void verbose_print_resistor(int resistor)
 
 void print_gpio(config_gpio gpio)
 {
-
     cout << "config.gpio.wipi_pin       : " <<
             gpio.bcm_pin << endl;
 
     cout << "config.gpio.role           : ";
     verbose_print_role(gpio.role);
 
-    cout << "config.gpio.direction      : ";
-    verbose_print_direction(gpio.direction);
+    if(gpio.direction != CFG_NOVAL)
+    {
+        cout << "config.gpio.direction      : ";
+        verbose_print_direction(gpio.direction);
+    }
 
-    cout << "config.gpio.resistor       : ";
-    verbose_print_resistor(gpio.resistor);
+    if(gpio.resistor != CFG_NOVAL)
+    {
+        cout << "config.gpio.resistor       : ";
+        verbose_print_resistor(gpio.resistor);
+    }
 }
 
 void verbose_print_config(config *conf)
@@ -162,6 +167,7 @@ void verbose_print_config(config *conf)
 
     cout << "battery_level_read_interval : " << c_battery_level_reader.battery_level_read_interval<< endl;
     cout << "battery_level_gpio_delay    : " << c_battery_level_reader.battery_level_gpio_delay << endl;
+    cout << "battery_level_pgood_delay   : " << c_battery_level_reader.battery_level_pgood_delay << endl;
     cout << "battery_level_log           : " << c_battery_level_reader.battery_level_log << endl;
 
     cout << "--------------------------------------------------" << endl;

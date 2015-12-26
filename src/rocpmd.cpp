@@ -484,7 +484,6 @@ int main(int argc, char **argv)
         verbose_print_options(opts);
         verbose_print_config(g_conf);
     }
-
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
 
     // if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 

@@ -365,11 +365,12 @@ int gpio_read_battery_level_raw(config *conf)
     int pin_no_cs = conf->get_gpio_by_role(CFG_ROLE_CS_B).bcm_pin;
     int pin_no_ud = conf->get_gpio_by_role(CFG_ROLE_UD_B).bcm_pin;
     int pin_no_pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B).bcm_pin;
-    int delay = conf->get_battery_level_reader().battery_level_gpio_delay;
+    int gpio_delay = conf->get_battery_level_reader().battery_level_gpio_delay;
+    int pgood_delay = conf->get_battery_level_reader().battery_level_pgood_delay;
 
     int status_pgood = digitalRead(pin_no_pgood);
     if(status_pgood == GPIO_ERROR) { return status_pgood; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     int status = GPIO_SUCCESS;
 
@@ -377,27 +378,27 @@ int gpio_read_battery_level_raw(config *conf)
     {
         return CHARGING; 
     }
-    DELAY(delay);
+    DELAY(gpio_delay);
     
     // reset the comparator
 
     status = digitalWrite(pin_no_ud, HIGH);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     status = digitalWrite(pin_no_cs, LOW);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     for(int i=0; i<=63; i++)
     {
         status = digitalWrite(pin_no_ud, LOW);
         if(status == GPIO_ERROR) { return status; }
-        DELAY(delay);
+        DELAY(gpio_delay);
 
         status = digitalWrite(pin_no_ud, HIGH);
         if(status == GPIO_ERROR) { return status; }
-        DELAY(delay);
+        DELAY(gpio_delay);
 
         status_pgood = digitalRead(pin_no_pgood);
         if(status_pgood == GPIO_ERROR) { return status_pgood; }
@@ -405,20 +406,19 @@ int gpio_read_battery_level_raw(config *conf)
 
     status = digitalWrite(pin_no_cs, HIGH);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
-    DELAY(PGOOD_SETTLE_DELAY); // force a  1/2 second delay for pgood to settle in case no battery is attached.
+    DELAY(pgood_delay); // force a  1/2 second delay for pgood to settle in case no battery is attached.
 
     status_pgood = digitalRead(pin_no_pgood);
     if(status_pgood == GPIO_ERROR) { return status_pgood; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     status = digitalWrite(pin_no_ud, LOW);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     status = digitalWrite(pin_no_cs, LOW);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
+    DELAY(gpio_delay);
     
     // read the level now
 
@@ -431,11 +431,11 @@ int gpio_read_battery_level_raw(config *conf)
     {
         status = digitalWrite(pin_no_ud, HIGH);
         if(status == GPIO_ERROR) { return status; }
-        DELAY(delay);
+        DELAY(gpio_delay);
 
         status = digitalWrite(pin_no_ud, LOW);
         if(status == GPIO_ERROR) { return status; }
-        DELAY(delay);
+        DELAY(gpio_delay);
 
         status_pgood = digitalRead(pin_no_pgood);
         if(status == GPIO_ERROR) { return status; }
@@ -446,7 +446,7 @@ int gpio_read_battery_level_raw(config *conf)
 
     status = digitalWrite(pin_no_cs, HIGH);
     if(status == GPIO_ERROR) { return status; }
-    DELAY(delay);
+    DELAY(gpio_delay);
 
     return battlevel;
 }
