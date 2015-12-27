@@ -83,6 +83,10 @@ Update the Raspi firmware to get the mcp3004 driver
 ```
 sudo rpi-update
 ```
+On Jessie Lite you may have to install this utility:
+```
+sudo apt-get install rpi-update
+```
 Download and install the YAML0.3 library. 
 
 For Raspbian Wheezy:
