@@ -169,14 +169,14 @@ using basic C/C++/Python file I/O.
 
 We currently recommend using the SYSFS interface for interacting with the A2D converter either by the 
 command line or by some form of programmatic file I/O. If you choose to use another interface for this 
-purpose please note that when the MCP4004 driver loads, it inhibits access to the A2D via the SPI. This 
+purpose please note that when the MCP3004 driver loads, it inhibits access to the A2D via the SPI. This 
 may render the A2D inaccessible via some libraries, for example, WiringPi. In this cases automatic 
 loading of the MCP3004 driver can be inhibited by placing the follwing line of text:
 
 ```
 dtparam=rocusespi=yes,rocusedriver=no 
 ```
-into the `/boot/config.txt` file before any other dtoverlay commands in config.txt.  
+into the `/boot/config.txt` file before any other dtoverlay= commands in config.txt.  
 
 
 Customization
