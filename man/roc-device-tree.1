@@ -102,13 +102,13 @@ available on the P1 connector, yet the device-tree blob is still required for pr
 the device-tree blob can be loaded from /boot/overlays using a dtoverlay= command in the /boot/config.txt:
 
 First:
-sudo cp HATPowerBoard/device=tree/rocpower-overlay.dtb /boot/overlays/.
+sudo cp HATPowerBoard/device-tree/rocpower-overlay.dtb /boot/overlays/.
 
 then add:
 dtoverlay=rocpower-overlay 
 
 to the \fBEND\fR of config.txt.  Any dtparam= commands required to remap the gpios should be placed immediately \fBAFTER\fR the
-dtoverlay=rocpower-overlay command an before any other dtoverlay=commands.
+dtoverlay=rocpower-overlay command and before any other dtoverlay=commands.
 
 .SHDISABLING LOADING of the EEPROM
 
