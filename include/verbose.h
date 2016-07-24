@@ -36,5 +36,6 @@
 
 void verbose_print_config(config *conf);
 void verbose_print_options(cmdline_options opts);
+void verbose_print_separator();
 
 #endif
