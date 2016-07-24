@@ -37,6 +37,34 @@
 
 using namespace std;
 
+void verbose_print_role(int role)
+{
+    switch(role)
+    {
+        case  CFG_ROLE_CS_B:
+            cout << "CFG_ROLE_CS_B" << endl;
+            break;
+        case CFG_ROLE_OFF:
+            cout << "CFG_ROLE_OFF" << endl;
+            break;
+        case CFG_ROLE_PGOOD_B:
+            cout << "CFG_ROLE_PGOOD_B" << endl;
+            break;
+        case CFG_ROLE_UD_B:
+            cout << "CFG_ROLE_UD_B" << endl;
+            break;
+        case CFG_ROLE_REQ_OFF_B:
+            cout << "CFG_ROLE_REQ_OFF_B" << endl;
+            break;
+        case CFG_ROLE_D1_B:
+            cout << "CFG_ROLE_D1_B" << endl;
+            break;
+        case CFG_ROLE_D2_B:
+            cout << "CFG_ROLE_D2_B" << endl;
+            break;
+    }
+}
+
 void verbose_print_direction(int direction)
 {
     switch(direction)
@@ -50,36 +78,77 @@ void verbose_print_direction(int direction)
     }
 }
 
+void verbose_print_resistor(int resistor)
+{
+    switch(resistor)
+    {
+        case PUD_UP:
+            cout << "PUD_UP" << endl;
+            break;
+        case PUD_DOWN:
+            cout << "PUD_DOWN" << endl;
+            break;
+        case PUD_OFF:
+            cout << "PUD_OFF" << endl;
+            break;
+    }
+}
+
+void print_gpio(config_gpio gpio)
+{
+    cout << "config.gpio.wipi_pin       : " <<
+            gpio.bcm_pin << endl;
+
+    cout << "config.gpio.role           : ";
+    verbose_print_role(gpio.role);
+
+    if(gpio.direction != CFG_NOVAL)
+    {
+        cout << "config.gpio.direction      : ";
+        verbose_print_direction(gpio.direction);
+    }
+
+    if(gpio.resistor != CFG_NOVAL)
+    {
+        cout << "config.gpio.resistor       : ";
+        verbose_print_resistor(gpio.resistor);
+    }
+}
+
 void verbose_print_config(config *conf)
 {
-    cout << "==================================================" << endl;
     cout << "Content of: " << conf->get_config_path() << endl;
-    cout << "==================================================" << endl;
-
-    cout << "OFF       : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_OFF) << endl;
-
-    cout << "REQ_OFF_B : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_REQ_OFF_B) << endl;
-
-    cout << "CS_B      : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_CS_B) << endl;
-
-    cout << "UD_B      : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_UD_B) << endl;
-
-    cout << "PGOOD_B   : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_PGOOD_B) << endl;
-
-    cout << "D1_B      : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_D1_B) << endl;
-
-    cout << "D2_B      : " << 
-    conf->get_gpio_pin_number_by_role(CFG_ROLE_D2_B) << endl;
-
-/*
     cout << "--------------------------------------------------" << endl;
 
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_OFF));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_CS_B));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_UD_B));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_PGOOD_B));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D1_B));
+
+    cout << endl;
+
+    print_gpio(conf->get_gpio_by_role(CFG_ROLE_D2_B));
+
+    cout << "--------------------------------------------------" << endl;
+
+/*
     config_socket c_socket = conf->get_socket();
 
     cout << "socket.port: " << c_socket.port << endl;
@@ -94,12 +163,12 @@ void verbose_print_config(config *conf)
     
     cout << "--------------------------------------------------" << endl;
 
-    blr_settings blrs = conf->get_battery_level_reader_settings();
+    config_battery_level_reader c_battery_level_reader = conf->get_battery_level_reader();
 
-    cout << "read_interval : " << blrs.read_interval<< endl;
-    cout << "gpio_delay    : " << blrs.gpio_delay << endl;
-    cout << "pgood_delay   : " << blrs.pgood_delay << endl;
-    cout << "log           : " << blrs.log << endl;
+    cout << "battery_level_read_interval : " << c_battery_level_reader.battery_level_read_interval<< endl;
+    cout << "battery_level_gpio_delay    : " << c_battery_level_reader.battery_level_gpio_delay << endl;
+    cout << "battery_level_pgood_delay   : " << c_battery_level_reader.battery_level_pgood_delay << endl;
+    cout << "battery_level_log           : " << c_battery_level_reader.battery_level_log << endl;
 
     cout << "--------------------------------------------------" << endl;
 
@@ -134,14 +203,14 @@ void verbose_print_config(config *conf)
     }
 
 
-    cout << "==================================================" << endl;
+    cout << "--------------------------------------------------" << endl;
+    cout << endl;
 }
 
 void verbose_print_options(cmdline_options opts)
 {
-    cout << "==================================================" << endl;
     cout << "Command line options:" << endl;
-    cout << "==================================================" << endl;
+    cout << "--------------------------------------------------" << endl;
     cout << "config-path       : " << opts.get_config_path() << endl;
     cout << "power-off         : " << opts.is_power_off() << endl;
     cout << "websocket         : " << opts.is_websocket() << endl;
@@ -150,12 +219,6 @@ void verbose_print_options(cmdline_options opts)
     cout << "battery-level-raw : " << opts.is_battery_level_raw() << endl;
     cout << "verbose           : " << opts.is_verbose() << endl;
     cout << "help              : " << opts.is_help() << endl;
-    cout << "==================================================" << endl;
-}
-
-void verbose_print_separator()
-{
-    cout << endl;
-    cout << "                        --                        " << endl;
+    cout << "--------------------------------------------------" << endl;
     cout << endl;
 }

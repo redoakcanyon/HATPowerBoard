@@ -149,81 +149,81 @@ int gpio_init(config *conf)
 
     // OFF
     // output, none
-    int off_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_OFF);
+    config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
 
     syslog(LOG_INFO, "Initializing OFF");
 
-    status = gpio_init_pin(off_bcm_pin);
+    status = gpio_init_pin(off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(off_bcm_pin, OUTPUT);
+    status = gpio_set_pin_direction(off.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
 
     // REQ_OFF
     // input, pull_up
-    int req_off_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_REQ_OFF_B);
+    config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
 
     syslog(LOG_INFO, "Initializing REQ_OFF");
 
-    status = gpio_init_pin(req_off_bcm_pin);
+    status = gpio_init_pin(req_off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(req_off_bcm_pin, INPUT);
+    status = gpio_set_pin_direction(req_off.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
     // CS
     // output, none
-    int cs_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_CS_B);
+    config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
 
     syslog(LOG_INFO, "Initializing CS");
 
-    status = gpio_init_pin(cs_bcm_pin);
+    status = gpio_init_pin(cs.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(cs_bcm_pin, OUTPUT);
+    status = gpio_set_pin_direction(cs.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
-    status = digitalWrite(cs_bcm_pin, HIGH);
+    status = digitalWrite(cs.bcm_pin, HIGH);
     if(status == GPIO_ERROR) { return status; }
 
     // UD
     // output, none
-    int ud_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_UD_B);
+    config_gpio ud = conf->get_gpio_by_role(CFG_ROLE_UD_B);
 
     syslog(LOG_INFO, "Initializing UD");
 
-    status = gpio_init_pin(ud_bcm_pin);
+    status = gpio_init_pin(ud.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(ud_bcm_pin, OUTPUT);
+    status = gpio_set_pin_direction(ud.bcm_pin, OUTPUT);
     if(status == GPIO_ERROR) { return status; }
 
     // PGOOD
     // input, pull_up
-    int pgood_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_PGOOD_B);
+    config_gpio pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B);
 
     syslog(LOG_INFO, "Initializing PGOOD");
 
-    status = gpio_init_pin(pgood_bcm_pin);
+    status = gpio_init_pin(pgood.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(pgood_bcm_pin, INPUT);
+    status = gpio_set_pin_direction(pgood.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
     // D1 (Charge indicator)
     // input, pull_up
-    int d1_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_D1_B);
+    config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
 
     syslog(LOG_INFO, "Initializing D1");
 
-    status = gpio_init_pin(d1_bcm_pin);
+    status = gpio_init_pin(d1.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(d1_bcm_pin, INPUT);
+    status = gpio_set_pin_direction(d1.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
     // D2 (Power connect indicator)
     // input, pull_up
-    int d2_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_D2_B);
+    config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
 
     syslog(LOG_INFO, "Initializing D2");
 
-    status = gpio_init_pin(d2_bcm_pin);
+    status = gpio_init_pin(d2.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
-    status = gpio_set_pin_direction(d2_bcm_pin, INPUT);
+    status = gpio_set_pin_direction(d2.bcm_pin, INPUT);
     if(status == GPIO_ERROR) { return status; }
 
     syslog(LOG_INFO, "Done initializing GPIO");
@@ -237,65 +237,65 @@ int gpio_cleanup(config *conf)
 
     // OFF
     // output, none
-    int off_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_OFF);
+    config_gpio off = conf->get_gpio_by_role(CFG_ROLE_OFF);
 
     syslog(LOG_INFO, "Cleaning up OFF");
 
-    status = gpio_cleanup_pin(off_bcm_pin);
+    status = gpio_cleanup_pin(off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // REQ_OFF
     // input, pull_up
-    int req_off_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_REQ_OFF_B);
+    config_gpio req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B);
 
     syslog(LOG_INFO, "Cleaning up REQ_OFF");
 
-    status = gpio_cleanup_pin(req_off_bcm_pin);
+    status = gpio_cleanup_pin(req_off.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // CS
     // output, none
-    int cs_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_CS_B);
+    config_gpio cs = conf->get_gpio_by_role(CFG_ROLE_CS_B);
 
     syslog(LOG_INFO, "Cleaning up CS");
 
-    status = gpio_cleanup_pin(cs_bcm_pin);
+    status = gpio_cleanup_pin(cs.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // UD
     // output, none
-    int ud_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_UD_B);
+    config_gpio ud = conf->get_gpio_by_role(CFG_ROLE_UD_B);
 
     syslog(LOG_INFO, "Cleaning up UD");
 
-    status = gpio_cleanup_pin(ud_bcm_pin);
+    status = gpio_cleanup_pin(ud.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // PGOOD
     // input, pull_up
-    int pgood_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_PGOOD_B);
+    config_gpio pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B);
 
     syslog(LOG_INFO, "Cleaning up PGOOD");
 
-    status = gpio_cleanup_pin(pgood_bcm_pin);
+    status = gpio_cleanup_pin(pgood.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // D1 (Charge indicator)
     // input, pull_up
-    int d1_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_D1_B);
+    config_gpio d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B);
 
     syslog(LOG_INFO, "Cleaning up D1");
 
-    status = gpio_cleanup_pin(d1_bcm_pin);
+    status = gpio_cleanup_pin(d1.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     // D2 (Power connect indicator)
     // input, pull_up
-    int d2_bcm_pin = conf->get_gpio_pin_number_by_role(CFG_ROLE_D2_B);
+    config_gpio d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B);
 
     syslog(LOG_INFO, "Cleaning up D2");
 
-    status = gpio_cleanup_pin(d2_bcm_pin);
+    status = gpio_cleanup_pin(d2.bcm_pin);
     if(status == GPIO_ERROR) { return status; }
 
     syslog(LOG_INFO, "Done cleaning up GPIO");
@@ -308,7 +308,7 @@ int gpio_write_off(config *conf)
     int status = GPIO_SUCCESS;
 
     syslog(LOG_CRIT, "calling gpio_write_off");
-    int pin_no_off = conf->get_gpio_pin_number_by_role(CFG_ROLE_OFF);
+    int pin_no_off = conf->get_gpio_by_role(CFG_ROLE_OFF).bcm_pin;
 
     for (int i=0; i<3;i++)
     {
@@ -327,7 +327,7 @@ int gpio_write_off(config *conf)
 // Returns 0 if the OFF button has been pressed by the user, until then it returns 1.
 int gpio_read_req_off(config *conf)
 {
-    int pin_no_req_off = conf->get_gpio_pin_number_by_role(CFG_ROLE_REQ_OFF_B);
+    int pin_no_req_off = conf->get_gpio_by_role(CFG_ROLE_REQ_OFF_B).bcm_pin;
 
     int status = GPIO_SUCCESS;
     status = digitalRead (pin_no_req_off);
@@ -339,7 +339,7 @@ int gpio_read_req_off(config *conf)
 // Returns 1 if power board is charging 0 if it is not.
 int gpio_read_d1(config *conf)
 {
-    int pin_no_d1 = conf->get_gpio_pin_number_by_role(CFG_ROLE_D1_B);
+    int pin_no_d1 = conf->get_gpio_by_role(CFG_ROLE_D1_B).bcm_pin;
 
     int status = GPIO_SUCCESS;
     status = digitalRead (pin_no_d1);
@@ -351,7 +351,7 @@ int gpio_read_d1(config *conf)
 // Returns 1 if the wall wart is connected 0 if it is not.
 int gpio_read_d2(config *conf)
 {
-    int pin_no_d2 = conf->get_gpio_pin_number_by_role(CFG_ROLE_D2_B);
+    int pin_no_d2 = conf->get_gpio_by_role(CFG_ROLE_D2_B).bcm_pin;
 
     int status = GPIO_SUCCESS;
     status = digitalRead (pin_no_d2); 
@@ -362,11 +362,11 @@ int gpio_read_d2(config *conf)
 
 int gpio_read_battery_level_raw(config *conf)
 {
-    int pin_no_cs = conf->get_gpio_pin_number_by_role(CFG_ROLE_CS_B);
-    int pin_no_ud = conf->get_gpio_pin_number_by_role(CFG_ROLE_UD_B);
-    int pin_no_pgood = conf->get_gpio_pin_number_by_role(CFG_ROLE_PGOOD_B);
-    int gpio_delay = conf->get_battery_level_reader_settings().gpio_delay;
-    int pgood_delay = conf->get_battery_level_reader_settings().pgood_delay;
+    int pin_no_cs = conf->get_gpio_by_role(CFG_ROLE_CS_B).bcm_pin;
+    int pin_no_ud = conf->get_gpio_by_role(CFG_ROLE_UD_B).bcm_pin;
+    int pin_no_pgood = conf->get_gpio_by_role(CFG_ROLE_PGOOD_B).bcm_pin;
+    int gpio_delay = conf->get_battery_level_reader().battery_level_gpio_delay;
+    int pgood_delay = conf->get_battery_level_reader().battery_level_pgood_delay;
 
     int status_pgood = digitalRead(pin_no_pgood);
     if(status_pgood == GPIO_ERROR) { return status_pgood; }

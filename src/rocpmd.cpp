@@ -285,7 +285,7 @@ int rocpmd::daemon_main(config *conf)
 	
     ud = new ud_server();
 
-    bool create_power_log = conf->get_battery_level_reader_settings().log;
+    bool create_power_log = conf->get_battery_level_reader().battery_level_log;
 
     if(create_power_log)
     {
@@ -386,7 +386,7 @@ bool rocpmd::battery_level_read_interval_expired(config *conf)
 {
     struct timeval now;
 
-    double interval = SEC_TO_MSEC(conf->get_battery_level_reader_settings().read_interval);
+    double interval = SEC_TO_MSEC(conf->get_battery_level_reader().battery_level_read_interval);
 
     double diff, seconds, useconds;
 
@@ -425,34 +425,8 @@ int main(int argc, char **argv)
 
     cmdline_options opts(argc, argv);
 
-    string config_path;
-
-    if(opts.get_config_path().length())
+    if(!is_board_installed())
     {
-        config_path = opts.get_config_path();
-    }
-    
-    try
-    {        
-        g_conf = new config(config_path);
-    }
-    catch(runtime_error e)
-    {
-        log_and_report(LOG_CRIT, "Exiting: ", e.what());
-        return EXIT_FAILURE;
-    }
-    catch(...)
-    {
-        unexpected();
-    }
-
-    if(is_board_installed() && 
-       g_conf->get_daemon_options().hat_install_check_override == false)
-    {
-        string msg = "No ROC Hat Power Management board "
-                     "is installed.";
-        log_and_report(LOG_CRIT, "Exiting: ", msg.c_str()); 
-                                 
         exit(EXIT_FAILURE);
     }
 
@@ -484,13 +458,32 @@ int main(int argc, char **argv)
         exit (EXIT_FAILURE);
     }
 
+    string config_path;
+
+    if(opts.get_config_path().length())
+    {
+        config_path = opts.get_config_path();
+    }
+    
+    try
+    {        
+        g_conf = new config(config_path);
+    }
+    catch(runtime_error e)
+    {
+        log_and_report(LOG_CRIT, "Exiting: ", e.what());
+        return EXIT_FAILURE;
+    }
+    catch(...)
+    {
+        unexpected();
+    }
+
     if(opts.is_verbose())
     {
         verbose_print_options(opts);
-        verbose_print_separator();
         verbose_print_config(g_conf);
     }
-
     int rocpmd_status = rocpmd_instance_lives(ROCPMD->get_lockfile_path());
 
     // if( rocpmd_status == ROCPMD_LOCKFILE_MISSING || 
