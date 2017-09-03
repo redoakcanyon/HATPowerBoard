@@ -60,7 +60,7 @@ int digitalWrite(int gpionum, int val)
     string gpio_val_str = "/sys/class/gpio/gpio" + gpionumber + "/value";
     ofstream gpio(gpio_val_str);
 
-    if (gpio < 0)
+    if (!gpio.is_open())
     {
         return GPIO_ERROR;
     }
@@ -78,7 +78,7 @@ int digitalRead(int gpionum)
     string gpio_val_str = "/sys/class/gpio/gpio" + gpionumber + "/value";
     ifstream gpio(gpio_val_str);
 
-    if (gpio < 0)
+    if (!gpio.is_open())
     {
         return GPIO_ERROR;
     }
@@ -100,7 +100,7 @@ int gpio_init_pin(int pin_no)
 {
     ofstream export_sysfs("/sys/class/gpio/export");
 
-    if (export_sysfs < 0)
+    if (!export_sysfs.is_open())
     {
         return GPIO_ERROR;
     }
@@ -115,7 +115,7 @@ int gpio_cleanup_pin(int pin_no)
 {
     ofstream unexport_sysfs("/sys/class/gpio/unexport");
 
-    if (unexport_sysfs < 0)
+    if (!unexport_sysfs.is_open())
     {
         return GPIO_ERROR;
     }
@@ -132,7 +132,7 @@ int gpio_set_pin_direction(int pin_no, int dir)
     string direction_path = "/sys/class/gpio/gpio" + pin_number + "/direction";
     ofstream direction_sysfs(direction_path);
 
-    if (direction_sysfs < 0)
+    if (!direction_sysfs.is_open())
     {
         return GPIO_ERROR;
     }
